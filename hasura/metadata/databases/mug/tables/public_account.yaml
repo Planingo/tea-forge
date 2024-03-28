@@ -1,0 +1,52 @@
+table:
+  name: account
+  schema: public
+object_relationships:
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
+array_relationships:
+  - name: account_roles
+    using:
+      foreign_key_constraint_on:
+        column: account_id
+        table:
+          name: account_roles
+          schema: public
+insert_permissions:
+  - role: auth
+    permission:
+      check: {}
+      columns:
+        - email
+        - password
+    comment: ""
+  - role: unauthorized
+    permission:
+      check: {}
+      columns:
+        - password
+        - user_id
+        - email
+    comment: ""
+select_permissions:
+  - role: auth
+    permission:
+      columns:
+        - archived
+        - email
+        - password
+        - id
+        - user_id
+      filter: {}
+    comment: ""
+  - role: unauthorized
+    permission:
+      columns:
+        - archived
+        - email
+        - id
+        - password
+        - user_id
+      filter: {}
+    comment: ""

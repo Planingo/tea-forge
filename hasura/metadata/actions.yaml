@@ -1,6 +1,24 @@
-actions: []
+actions:
+  - name: createAccount
+    definition:
+      kind: synchronous
+      handler: http://host.docker.internal:4000/account
+    permissions:
+      - role: unauthorized
+    comment: createAccount
+  - name: login
+    definition:
+      kind: ""
+      handler: http://host.docker.internal:4000/login
+    permissions:
+      - role: unauthorized
+    comment: login
 custom_types:
   enums: []
-  input_objects: []
-  objects: []
+  input_objects:
+    - name: SampleInput
+  objects:
+    - name: SampleOutput
+    - name: CreateUserResult
+    - name: LoginResult
   scalars: []

@@ -1,0 +1,13 @@
+table:
+  name: lesson
+  schema: public
+object_relationships:
+  - name: module
+    using:
+      manual_configuration:
+        column_mapping:
+          module_id: id
+        insertion_order: null
+        remote_table:
+          name: module
+          schema: public
