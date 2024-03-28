@@ -1,0 +1,33 @@
+type Mutation {
+  createAccount(
+    email: String!
+    password: String!
+  ): CreateUserResult!
+}
+
+type Query {
+  login(
+    email: String!
+    password: String!
+  ): LoginResult!
+}
+
+input SampleInput {
+  username: String!
+  password: String!
+}
+
+type SampleOutput {
+  accessToken: String!
+}
+
+type CreateUserResult {
+  accountId: uuid!
+  token: String!
+}
+
+type LoginResult {
+  accountId: uuid!
+  token: String!
+}
+

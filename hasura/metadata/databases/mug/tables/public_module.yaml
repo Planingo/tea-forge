@@ -1,0 +1,11 @@
+table:
+  name: module
+  schema: public
+array_relationships:
+  - name: lessons
+    using:
+      foreign_key_constraint_on:
+        column: module_id
+        table:
+          name: lesson
+          schema: public
