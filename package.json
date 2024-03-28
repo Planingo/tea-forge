@@ -10,14 +10,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@apollo/client": "^3.9.6",
     "@planingo/ditto": "^2.2.16",
+    "graphql": "^16.8.1",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-intl": "^6.6.2",
-    "react-router-dom": "^6.22.3"
+    "react-router-dom": "^6.22.3",
+    "use-local-storage-state": "^19.1.0"
   },
   "devDependencies": {
+    "@types/node": "^20.11.26",
     "@types/prop-types": "^15",
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
@@ -32,6 +36,7 @@
   },
   "packageManager": "yarn@4.1.1",
   "resolutions": {
-    "@planingo/ditto": "portal:/Users/bugsyaya/Desktop/Planingo/Ditto"
+    "@planingo/ditto": "portal:/Users/bugsyaya/Desktop/Planingo/Ditto",
+    "@pixel-brew/bubble-craft": "portal:/Users/bugsyaya/Desktop/Planingo/Ditto"
   }
 }

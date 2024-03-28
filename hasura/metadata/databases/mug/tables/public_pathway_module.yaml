@@ -1,0 +1,10 @@
+table:
+  name: pathway_module
+  schema: public
+object_relationships:
+  - name: module
+    using:
+      foreign_key_constraint_on: module_id
+  - name: pathway
+    using:
+      foreign_key_constraint_on: pathway_id

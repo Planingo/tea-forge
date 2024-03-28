@@ -1,0 +1,22 @@
+table:
+  name: account_roles
+  schema: public
+object_relationships:
+  - name: account
+    using:
+      manual_configuration:
+        column_mapping:
+          account_id: id
+        insertion_order: null
+        remote_table:
+          name: account
+          schema: public
+  - name: role
+    using:
+      manual_configuration:
+        column_mapping:
+          role_id: id
+        insertion_order: null
+        remote_table:
+          name: role
+          schema: public
