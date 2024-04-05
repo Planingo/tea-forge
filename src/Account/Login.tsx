@@ -5,7 +5,6 @@ export const Login = () => {
     const login = useLogin()
 
 	const onSubmit = async (value: {email: string, password: string}) => {
-		console.log(value)
 		await (await login)(value)
 	}
 	

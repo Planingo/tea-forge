@@ -26,7 +26,6 @@ export const Students = () => {
 	const [addOneStudent, loading] = useAddOneStudent()
     const [isGrid, setIsGrid] = useState(false)
     const { count } = useCountStudent()
-    console.log(students)
     return <Layout>
         <Header 
             placeholder="Rechercher"
