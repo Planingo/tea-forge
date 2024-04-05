@@ -19,19 +19,17 @@ import { useModules_tea } from '../../Tools/Authenticated/modules.js';
 import { Module } from '../../Types/module.js';
 import { Pathway } from '../../Types/pathway.js';
 import { uniqBy } from '../../../helper/uniq.js';
+import { Lesson } from '../../Types/lesson.js';
+import { Actions } from '../../Types/actions.js';
 
 export const Lessons = () => {
-    const onSearch = (e: any) => {
+    const onSearch = (e: string) => {
         console.log
     } 
     const {lessons, loading: loadingLessons} = useLessons()
     const {modules, loading: loadingModules} = useModules_tea()
 	const [addOneLesson, loading] = useAddOneLesson()
     const [isGrid, setIsGrid] = useState(false)
-
-    console.log(lessons?.map((lesson: any) => 
-        ({value: lesson.module.id, text: lesson.module.name})
-    ))
 
     return <Layout>
     <Header 
@@ -86,7 +84,7 @@ export const Lessons = () => {
                         dataIndex: 'name',
                         key: 'name',
                         title: 'name',
-                        sorter: (a: any, b: any) => a.name.localeCompare(b.name),
+                        sorter: (a: Lesson, b: Lesson) => a.name.localeCompare(b.name),
                     },
                     {
                         dataIndex: 'start_date',
@@ -103,30 +101,30 @@ export const Lessons = () => {
                         key: 'module',
                         title: 'Module',
                         render: (module: Module) => <a href={`/modules/${module?.id}`}>{module?.name}</a>,
-                        filters: uniqBy(lessons?.map((lesson: any) => 
+                        filters: uniqBy(lessons?.map((lesson: Lesson) => 
                             ({value: lesson.module.id, text: lesson.module.name})
-                        ), ({value}: any) => value),
+                        ), ({value}: {value: string}) => value),
                         filterSearch: true,
-                        onFilter: (value: string, record: any) => record.module.id === value,
-                        sorter: (a: any, b: any) => a.name.localeCompare(b.name),
+                        onFilter: (value: string, record: Lesson) => record.module.id === value,
+                        sorter: (a: Lesson, b: Lesson) => a.name.localeCompare(b.name),
                     },
                     {
                         dataIndex: 'pathway',
                         key: 'pathway',
                         title: 'pathway',
                         render: (pathway: Pathway) => <a href={`/pathways/${pathway?.id}`}>{pathway?.name}</a>,
-                        filters: uniqBy(lessons?.map((lesson: any) => 
+                        filters: uniqBy(lessons?.map((lesson: Lesson) => 
                             ({value: lesson.pathway?.id, text: lesson.pathway?.name})
-                        ), ({value}: any) => value),
+                        ), ({value}: {value: string}) => value),
                         filterSearch: true,
-                        onFilter: (value: string, record: any) => record?.pathway?.id === value,
-                        sorter: (a: any, b: any) => a.name.localeCompare(b.name),
+                        onFilter: (value: string, record: Lesson) => record?.pathway?.id === value,
+                        sorter: (a: Lesson, b: Lesson) => a.name.localeCompare(b.name),
                     },
                     {
                         dataIndex: 'actions',
                         key: 'actions',
                         title: 'actions',
-                        render: (actions: any, record: any) => <div className='actions'>
+                        render: (actions: Actions, record: Lesson) => <div className='actions'>
                                 <Link to={`/lessons/${record.id}`} replace={true}>
                                     <Tooltip title={'Détail'} placement='bottom'>
                                         <ExportOutlined className='download' />

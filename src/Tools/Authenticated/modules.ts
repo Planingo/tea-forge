@@ -21,7 +21,7 @@ const getModulesQuerie = gql`
 
 export const useModules_tea = () => {
 	const {data, ...result} = useQuery(getModulesQuerie)
-    const modules: Module = data?.module.map((module: HasuraModule) => ({
+    const modules: Module[] = data?.module.map((module: HasuraModule) => ({
         id: module.id,
         name: module.name,
         pathways: module.pathway_modules?.map((pathway_module: HasuraPathway_Module) => pathway_module.pathway),

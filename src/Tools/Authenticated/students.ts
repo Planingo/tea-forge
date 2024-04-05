@@ -124,15 +124,13 @@ const getStudentById = gql`
     ${calendarFragment}
 `
 
-const toStudent = (student: HasuraStudent | undefined | null): Student | null => {
-    if(!student) return null
-
+const toStudent = (student: HasuraStudent): Student => {
     return {
-        id: student.id,
-        name: `${student.user.lastname?.toUpperCase()} ${student.user.firstname}`,
-        firstname: student.user.firstname,
-        lastname: student.user.lastname?.toUpperCase(),
-        email: student.user.account?.email,
+        id: student?.id,
+        name: `${student?.user.lastname?.toUpperCase()} ${student?.user.firstname}`,
+        firstname: student?.user.firstname,
+        lastname: student?.user.lastname?.toUpperCase(),
+        email: student?.user.account?.email,
         pathway: student?.student_pathways[0]?.pathway,
         calendar: student?.student_calendars[0]?.calendar,
         events: student?.student_calendars[0]?.calendar?.module_calendars.flatMap(({module}: ({module: HasuraModule})) =>
@@ -148,17 +146,17 @@ const toStudent = (student: HasuraStudent | undefined | null): Student | null =>
         ),
         tags: [],
         actions : {
-            downloadTitle: `Télécharger le calendrier pour ${student.user.lastname?.toUpperCase()} ${student.user.firstname}`,
-            cloudTitle: `Envoyer le calendrier à ${student.user.lastname?.toUpperCase()} ${student.user.firstname}`,
-            deleteTitle: `Supprimer l'étudtiant ${student.user.lastname?.toUpperCase()} ${student.user.firstname}`,
+            downloadTitle: `Télécharger le calendrier pour ${student?.user.lastname?.toUpperCase()} ${student?.user.firstname}`,
+            cloudTitle: `Envoyer le calendrier à ${student?.user.lastname?.toUpperCase()} ${student?.user.firstname}`,
+            deleteTitle: `Supprimer l'étudtiant ${student?.user.lastname?.toUpperCase()} ${student?.user.firstname}`,
         },
-        link: `/students/${student.user.id}`,
-        alt: `${student.user.lastname?.toUpperCase()} ${student.user.firstname}`,
-        src: `https://avatars.bugsyaya.dev/150/${student.user.id}`,
+        link: `/students/${student?.user.id}`,
+        alt: `${student?.user.lastname?.toUpperCase()} ${student?.user.firstname}`,
+        src: `https://avatars.bugsyaya.dev/150/${student?.user.id}`,
     }
 }
 
-const toStudents = (students : HasuraStudent[]) => {
+const toStudents = (students : HasuraStudent[]): Student[] => {
     return students?.map((student: HasuraStudent) => toStudent(student))
 }
 
@@ -201,8 +199,8 @@ export const useSearchStudents = () => {
 
     const {data,...result } = useQuery(SEARCH_STUDENTS, searchQuery)
   
-    const search = useDebouncedCallback((searchText: any) => {
-		const searchsTmp = searchText.split(" ").map((st: any) => `%${st}%`)
+    const search = useDebouncedCallback((searchText: string) => {
+		const searchsTmp = searchText.split(" ").map((st: string) => `%${st}%`)
 		if (searchText) setSearchQuery({variables: {  searchText: searchsTmp[0], searchText2: searchsTmp[1] || "" }})
 		else setSearchQuery({variables: { searchText:"%%", searchText2:"" }})
     }, 500)

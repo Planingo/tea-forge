@@ -15,9 +15,11 @@ import { useState } from 'react';
 import { useAddOneCompany, useCompanies } from '../../Tools/Authenticated/companies.js';
 import { Link } from 'react-router-dom';
 import { Layout } from '../Layout/Layout.js';
+import { Actions } from '../../Types/actions.js';
+import { Company } from '../../Types/company.js';
 
 export const Companies = () => {
-    const onSearch = (e: any) => {
+    const onSearch = (e: string) => {
         console.log
     } 
     const {companies, loading: loadingCompanies} = useCompanies()
@@ -81,7 +83,7 @@ export const Companies = () => {
                         dataIndex: 'actions',
                         key: 'actions',
                         title: 'actions',
-                        render: (actions: any, record: any) => <div className='actions'>
+                        render: (actions: Actions, record: Company) => <div className='actions'>
                                 <Link to={`/companies/${record.id}`} replace={true}>
                                     <Tooltip title={'Détail'} placement='bottom'>
                                         <ExportOutlined className='download' />

@@ -70,50 +70,50 @@ const getLessonById = gql`
     ${calendarFragment}
 `
 
-
-const toLesson = (lesson: HasuraLesson | undefined | null): Lesson | null => {
-    if(!lesson) return null
-
-    const start = new Date(lesson.start_date);
-    const end = new Date(lesson.end_date);
+const toLesson = (lesson: HasuraLesson): Lesson => {
+    const start = new Date(lesson?.start_date);
+    const end = new Date(lesson?.end_date);
     return {
-        id: lesson.id,
-        name: `${lesson.name.toUpperCase()}`,
+        id: lesson?.id,
+        name: `${lesson?.name.toUpperCase()}`,
         start_date: `${(start).toLocaleTimeString()} ${(start).toLocaleDateString()}`,
         end_date: `${(end).toLocaleTimeString()} ${(end).toLocaleDateString()}`,
-        module: lesson.module_lessons[0].module,
-        pathway: lesson.module_lessons[0].module?.pathway_modules[0]?.pathway,
+        module: lesson?.module_lessons[0].module,
+        pathway: lesson?.module_lessons[0].module?.pathway_modules[0]?.pathway,
         events: ([{
-                title: lesson.name,
-                start: lesson.start_date,
-                end: lesson.start_date,
-                backgroundColor: generateColor(lesson.module_lessons[0].module.name),
-                borderColor: generateColor(lesson.module_lessons[0].module.name),
+                title: lesson?.name,
+                start: lesson?.start_date,
+                end: lesson?.start_date,
+                backgroundColor: generateColor(lesson?.module_lessons[0]?.module?.name || "null"),
+                borderColor: generateColor(lesson?.module_lessons[0]?.module?.name || "null"),
             }]
         ),
         tags: [],
         actions: {
-            downloadTitle: `Télécharger le calendrier pour ${lesson.name.toUpperCase()}`,
-            cloudTitle: `Envoyer le calendrier à ${lesson.name.toUpperCase()}`,
-            deleteTitle: `Supprimer l'étudtiant ${lesson.name.toUpperCase()}`,
+            downloadTitle: `Télécharger le calendrier pour ${lesson?.name.toUpperCase()}`,
+            cloudTitle: `Envoyer le calendrier à ${lesson?.name.toUpperCase()}`,
+            deleteTitle: `Supprimer l'étudtiant ${lesson?.name.toUpperCase()}`,
         },
-        link: `/lessons/${lesson.id}`,
-        alt: `${lesson.name.toUpperCase()}`,
-        src: `https://avatars.bugsyaya.dev/150/${lesson.id}`,
+        link: `/lessons/${lesson?.id}`,
+        alt: `${lesson?.name.toUpperCase()}`,
+        src: `https://avatars.bugsyaya.dev/150/${lesson?.id}`,
     }
+}
+
+const toLessons = (lessons: HasuraLesson[]): Lesson[] => {
+    return lessons?.map((lesson: HasuraLesson) => toLesson(lesson))
 }
 
 export const useGetLessonById = (id: string) => {
     const {data, ...result} = useQuery(getLessonById, { variables: { id: id } })
 
     const l = toLesson(data?.lesson_by_pk)
-    console.log(l)
 	return { lesson: l, ...result }
 }
 
 export const useLessons = () => {
 	const {data, ...result} = useQuery(getLessonsQuerie)
-    const lessons = data?.lesson.map((lesson: HasuraLesson) => toLesson(lesson))
+    const lessons = toLessons(data?.lesson)
     return {lessons, ...result}
 }
 

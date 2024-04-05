@@ -15,9 +15,11 @@ import { useState } from 'react';
 import { useAddOneProfessor, useProfessors } from '../../Tools/Authenticated/professors.js';
 import { Link } from 'react-router-dom';
 import { Layout } from '../Layout/Layout.js';
+import { Professor } from '../../Types/professor.js';
+import { Actions } from '../../Types/actions.js';
 
 export const Professors = () => {
-    const onSearch = (e: any) => {
+    const onSearch = (e: string) => {
         console.log
     } 
     const {professors, loading: loadingProfessors} = useProfessors()
@@ -76,13 +78,13 @@ export const Professors = () => {
                         dataIndex: 'lastname',
                         key: 'lastname',
                         title: 'lastname',
-                        sorter: (a: any, b: any) => a.lastname.localeCompare(b.lastname),
+                        sorter: (a: Professor, b: Professor) => a.lastname.localeCompare(b.lastname),
                     },
                     {
                         dataIndex: 'firstname',
                         key: 'firstname',
                         title: 'firstname',
-                        sorter: (a: any, b: any) => a.firstname.localeCompare(b.firstname),
+                        sorter: (a: Professor, b: Professor) => a.firstname.localeCompare(b.firstname),
                     },
                     {
                         dataIndex: 'email',
@@ -93,7 +95,7 @@ export const Professors = () => {
                         dataIndex: 'actions',
                         key: 'actions',
                         title: 'actions',
-                        render: (actions: any, record: any) => <div className='actions'>
+                        render: (actions: Actions, record: Professor) => <div className='actions'>
                                 <Link to={`/professors/${record.id}`} replace={true}>
                                     <Tooltip title={'Détail'} placement='bottom'>
                                         <ExportOutlined className='download' />

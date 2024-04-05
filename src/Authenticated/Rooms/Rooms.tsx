@@ -15,9 +15,11 @@ import { useState } from 'react';
 import { useAddOneRoom, useRooms } from '../../Tools/Authenticated/rooms.js';
 import { Link } from 'react-router-dom';
 import { Layout } from '../Layout/Layout.js';
+import { Actions } from '../../Types/actions.js';
+import { Room } from '../../Types/room.js';
 
 export const Rooms = () => {
-    const onSearch = (e: any) => {
+    const onSearch = (e: string) => {
         console.log
     } 
     const {rooms, loading: loadingRooms} = useRooms()
@@ -86,7 +88,7 @@ export const Rooms = () => {
                         dataIndex: 'actions',
                         key: 'actions',
                         title: 'actions',
-                        render: (actions: any, record: any) => <div className='actions'>
+                        render: (actions: Actions, record: Room) => <div className='actions'>
                                 <Link to={`/rooms/${record.id}`} replace={true}>
                                     <Tooltip title={'Détail'} placement='bottom'>
                                         <ExportOutlined className='download' />
