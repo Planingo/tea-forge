@@ -1,5 +1,6 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { Professor } from '../../Types/professor.js';
+import { Professor as HasuraProfessor } from '../../Types/Hasura/professor.js';
+import { Professor } from "../../Types/professor.js";
 
 const getProfessorsQuerie = gql`
     query professors {
@@ -18,11 +19,28 @@ const getProfessorsQuerie = gql`
     }
 `
 
-export const useProfessors = () => {
-	const {data, ...result} =useQuery(getProfessorsQuerie)
-    
-    const professors = data?.professor.map((professor: Professor) => ({
-        id: professor.user.id,
+const getProfessorById = gql`
+    query professor_by_pk($id: uuid!) {
+        professor_by_pk(id: $id) {
+            id
+            user {
+                lastname
+                firstname
+                id
+                account {
+                    id
+                    email
+                }
+            }
+        }
+    }
+`
+
+const toProfessor = (professor: HasuraProfessor | undefined | null): Professor | null => {
+    if(!professor) return null
+
+    return {
+        id: professor.id,
         name: `${professor.user.lastname?.toUpperCase()} ${professor.user.firstname}`,
         firstname: professor.user.firstname,
         lastname: professor.user.lastname?.toUpperCase(),
@@ -36,8 +54,27 @@ export const useProfessors = () => {
         link: `/professors/${professor.user.id}`,
         alt: `${professor.user.lastname?.toUpperCase()} ${professor.user.firstname}`,
         src: `https://avatars.bugsyaya.dev/150/${professor.user.id}`,
-    }))
+    }
+}
+
+const toProfessors = (professors : HasuraProfessor[]) => {
+    return professors?.map((professor: HasuraProfessor) => toProfessor(professor))
+}
+
+export const useProfessors = () => {
+	const {data, ...result} =useQuery(getProfessorsQuerie)
+    
+    const professors = toProfessors(data?.professor)
     return {professors, ...result}
+}
+
+export const useGetProfessorById = (id: string) => {
+    const {data, ...result} = useQuery(getProfessorById, { variables: { id: id } })
+
+    console.log(data)
+    const p = toProfessor(data?.professor_by_pk)
+    console.log(p)
+	return { professor: p, ...result }
 }
 
 export const useAddOneProfessor = () => {
@@ -63,6 +100,6 @@ export const useAddOneProfessor = () => {
     },
     )
 
-	return [(professor: Professor) => {
+	return [(professor: HasuraProfessor) => {
         return (addOneProfessor({ variables: professor }))}, result]
 }

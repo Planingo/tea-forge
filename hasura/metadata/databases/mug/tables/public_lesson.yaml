@@ -1,13 +1,18 @@
 table:
   name: lesson
   schema: public
-object_relationships:
-  - name: module
+array_relationships:
+  - name: calendar_lessons
     using:
-      manual_configuration:
-        column_mapping:
-          module_id: id
-        insertion_order: null
-        remote_table:
-          name: module
+      foreign_key_constraint_on:
+        column: lesson_id
+        table:
+          name: calendar_lesson
+          schema: public
+  - name: module_lessons
+    using:
+      foreign_key_constraint_on:
+        column: lesson_id
+        table:
+          name: module_lesson
           schema: public

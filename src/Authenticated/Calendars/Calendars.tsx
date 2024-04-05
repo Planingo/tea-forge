@@ -1,66 +1,95 @@
-import { Gallery, GalleryList, Roles, CalendarOutlined } from '@planingo/ditto';
+import { Gallery, GalleryList, Roles, CalendarOutlined, StudentForm, Header, UserOutlined } from '@planingo/ditto';
 import { useState } from 'react';
-import { useProfessors } from '../../Tools/Authenticated/professors.js';
 import { Layout } from '../Layout/Layout.js';
+import { useAddOneCalendar, useCountCalendar, useSearchCalendars } from '../../Tools/Authenticated/calendars.js';
 
 export const Calendars = () => {
-    const {professors, loading} = useProfessors()
-    const [isGrid, setIsGrid] = useState(true)
-    return <Layout
-        loading={loading}
-        navigation={{roles: [Roles.SUPER_ADMIN, Roles.PLANING_KEEPER]}}
-        header={{
-            isRefinementList: true,
-            placeholder: 'Rechercher',
-            refinementDetails: {
-                FirstActionIcon: CalendarOutlined,
-                FirstForm: <></>,
-                SecondActionIcon: console.log,
-                SecondForm: <></>,
+    const { search, calendars, loading: loadingCalendars } = useSearchCalendars()
+	const [addOneCalendar, loading] = useAddOneCalendar()
+    const [isGrid, setIsGrid] = useState(false)
+    const { count } = useCountCalendar()
+    return <Layout>
+        <Header
+            placeholder="Rechercher"
+            onSearch={search}
+            isRefinementList={true}
+            refinementList={{
+                FirstActionIcon: UserOutlined,
                 firstActionText: 'app.add.calendar',
-                firstActioning: console.log,
+                FirstForm: <StudentForm onSubmit={addOneCalendar} />,
+                firstActioning: loading,
+                onFirstAction: addOneCalendar,
                 isGrid: isGrid,
-                onFirstAction: console.log,
-                onSecondAction: console.log,
-                secondActionText: 'app.edit.calendar',
-                secondActioning: console.log,
-                setIsGrid: () => setIsGrid(isGrid)
-            },
-            refinementList: {
-                FirstActionIcon: CalendarOutlined,
-                firstActionText: 'app.add.calendar',
-                FirstForm: <></>,
-                firstActioning: console.log,
-                onFirstAction: console.log,
-                isGrid: isGrid,
-                setIsGrid: () => setIsGrid(!isGrid)
-            }
-        }}
-    >
+                setIsGrid: () => setIsGrid(!isGrid),
+                formId: "calendar-form",
+            }}
+        />
         {isGrid ?
             <Gallery
-                datas={professors}
-                name="professor"
+                datas={calendars}
+                name="calendars"
+                loading={loadingCalendars}
+                count={count}
             />
-        :
-            <GalleryList
-                columns={[
-                    {
-                        dataIndex: 'image',
-                        // render: ({id}: {id: string}) => 
-                        //     <img
-                        //     src={`https://avatars.bugsyaya.dev/150/${id}`}
-                        //     alt="placeholder"
-                        //     />,
-                        title: 'Photo'
-                    },
-                    {
-                    dataIndex: 'name',
-                    title: 'Name'
-                    }
-                ]}
-                datas={professors}
-                name="professor" />
-            }
+        : <></>
+        // <GalleryList
+        //         columns={[
+        //             {
+        //                 dataIndex: 'src',
+        //                 key: 'src',
+        //                 render: (src: string) => 
+        //                     (<img
+        //                         src={src}
+        //                         alt="placeholder"
+        //                     />),
+        //                 title: 'Photo'
+        //             },
+        //             {
+        //                 dataIndex: 'email',
+        //                 key: 'email',
+        //                 title: 'email'
+        //             },
+        //             {
+        //                 dataIndex: 'firstname',
+        //                 key: 'firstname',
+        //                 title: 'firstname'
+        //             },
+        //             {
+        //                 dataIndex: 'lastname',
+        //                 key: 'lastname',
+        //                 title: 'lastname'
+        //             },
+        //             {
+        //                 dataIndex: 'calendar',
+        //                 key: 'calendar',
+        //                 title: 'calendar',
+        //                 render: (calendar: Calendar) => <a href={`/calendars/${calendar?.id}`}>{calendar?.name}</a>
+        //             },
+        //             {
+        //                 dataIndex: 'actions',
+        //                 key: 'actions',
+        //                 title: 'actions',
+        //                 render: (actions: any, record: any) => <div className='actions'>
+        //                         <Link to={`/calendars/${record.id}`} replace={true}>
+        //                             <Tooltip title={'Détail'} placement='bottom'>
+        //                                 <ExportOutlined className='download' />
+        //                             </Tooltip>
+        //                         </Link>
+        //                     <Tooltip title={actions.downloadTitle || 'Télécharger'} placement='bottom'>
+        //                         <DownloadOutlined className='download' />
+        //                     </Tooltip>
+        //                     <Tooltip title={actions.cloudTitle || 'Envoyer'} placement='bottom'>
+        //                         <CloudUploadOutlined className='cloud' />
+        //                     </Tooltip>
+        //                     <Tooltip title={actions.deleteTitle || 'Supprimer'} placement='bottom'>
+        //                         <DeleteOutlined className='delete' />
+        //                     </Tooltip>
+        //                 </div>
+        //             }
+        //         ]}
+        //         datas={calendars}
+        //         name="calendars"
+        //     />
+        }
     </Layout>
 }

@@ -1,4 +1,6 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
+import { Module as HasuraModule } from '../../Types/Hasura/module.js';
+import { Pathway_Module as HasuraPathway_Module } from "../../Types/Hasura/pathway_module.js";
 import { Module } from '../../Types/module.js';
 
 const getModulesQuerie = gql`
@@ -6,15 +8,23 @@ const getModulesQuerie = gql`
         module(order_by: {name: asc}, where: {archived: {_eq: false}}) {
             id
             name
+            pathway_modules {
+              id
+              pathway {
+                id
+                name
+              }
+            }
         }
     }
 `
 
 export const useModules_tea = () => {
 	const {data, ...result} = useQuery(getModulesQuerie)
-    const modules = data?.module.map((module: Module) => ({
+    const modules: Module = data?.module.map((module: HasuraModule) => ({
         id: module.id,
         name: module.name,
+        pathways: module.pathway_modules?.map((pathway_module: HasuraPathway_Module) => pathway_module.pathway),
         tags: [],
         actions:{
             downloadTitle: `Télécharger le calendrier pour ${module.name}`,
@@ -46,6 +56,6 @@ export const useAddOneModule = () => {
     },
     )
 
-	return [(module: Module) => {
+	return [(module: HasuraModule) => {
         return (addOneModule({ variables: module }))}, result]
 }

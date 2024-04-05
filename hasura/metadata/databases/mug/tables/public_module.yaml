@@ -2,10 +2,24 @@ table:
   name: module
   schema: public
 array_relationships:
-  - name: lessons
+  - name: module_calendars
     using:
       foreign_key_constraint_on:
         column: module_id
         table:
-          name: lesson
+          name: module_calendar
+          schema: public
+  - name: module_lessons
+    using:
+      foreign_key_constraint_on:
+        column: module_id
+        table:
+          name: module_lesson
+          schema: public
+  - name: pathway_modules
+    using:
+      foreign_key_constraint_on:
+        column: module_id
+        table:
+          name: pathway_module
           schema: public

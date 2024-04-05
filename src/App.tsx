@@ -19,6 +19,9 @@ import { Pathways } from './Authenticated/Pathways/Pathways.js'
 import { Rooms } from './Authenticated/Rooms/Rooms.js'
 import { Settings } from './Authenticated/Settings/Settings.js'
 import { Companies } from './Authenticated/Companies/Companies.js'
+import { Calendar } from './Authenticated/Calendars/Calendar.js'
+import { Lesson } from './Authenticated/Lessons/Lesson.js'
+import { Professor } from './Authenticated/Professors/Professor.js'
 
 export const AuthentificationContexte = createContext<{token: string | undefined, setToken: (token: string | undefined) => void} | undefined>(undefined)
 
@@ -46,22 +49,18 @@ function Routes() {
 				<ReactRoute path="/signup" element={<Signup />}/>
 				<ReactRoute path="/reset" element={<Reset />}/>
 				<ReactRoute path="/" element={<Authenticated />}>
-					<ReactRoute path="/students/:id" element={<Student />}/>
-					<ReactRoute path="/students" element={<Students />} />
-					<ReactRoute path="/professors/:id" element={<Student />}/>
-					<ReactRoute path="/professors" element={<Professors />}/>
-					<ReactRoute path="/calendars/:id" element={<Student />}/>
-					<ReactRoute path="/calendars" element={<Calendars />}/>
-					<ReactRoute path="/lessons/:id" element={<Student />}/>
-					<ReactRoute path="/lessons" element={<Lessons />}/>
-					<ReactRoute path="/modules/:id" element={<Student />}/>
-					<ReactRoute path="/modules" element={<Modules />}/>
-					<ReactRoute path="/pathways/:id" element={<Student />}/>
-					<ReactRoute path="/pathways" element={<Pathways />}/>
-					<ReactRoute path="/rooms/:id" element={<Student />}/>
-					<ReactRoute path="/rooms" element={<Rooms />}/>
-					<ReactRoute path="/companies/:id" element={<Student />}/>
-					<ReactRoute path="/companies" element={<Companies />}/>
+					<ReactRoute path="/students/:id" element={<Student />} />
+					<ReactRoute path="/students/" element={<Students />} />
+					<ReactRoute path="/professors/:id" element={<Professor />}/>
+					<ReactRoute path="/professors/" element={<Professors />}/>
+					<ReactRoute path="/calendars/:id" element={<Calendar />}/>
+					<ReactRoute path="/calendars/" element={<Calendars />}/>
+					<ReactRoute path="/lessons/:id" element={<Lesson />}/>
+					<ReactRoute path="/lessons/" element={<Lessons />}/>
+					<ReactRoute path="/modules/:id?" element={<Modules />}/>
+					<ReactRoute path="/pathways/:id?" element={<Pathways />}/>
+					<ReactRoute path="/rooms/:id?" element={<Rooms />}/>
+					<ReactRoute path="/companies/:id?" element={<Companies />}/>
 					<ReactRoute path="/settings" element={<Settings />}/>
 				</ReactRoute>
 			</ReactRoutes>

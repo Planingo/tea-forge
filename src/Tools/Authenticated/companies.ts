@@ -1,4 +1,5 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
+import { Company as HasuraCompany } from "../../Types/Hasura/company.js";
 import { Company } from "../../Types/company.js";
 
 const getCompaniesQuerie = gql`
@@ -12,7 +13,7 @@ const getCompaniesQuerie = gql`
 
 export const useCompanies = () => {
 	const {data, ...result} = useQuery(getCompaniesQuerie)
-    const companies = data?.company.map((company: Company) => ({
+    const companies: Company = data?.company.map((company: HasuraCompany) => ({
         id: company.id,
         name: company.name,
         tags: [],
@@ -46,6 +47,6 @@ export const useAddOneCompany = () => {
     },
     )
 
-	return [(company: Company) => {
+	return [(company: HasuraCompany) => {
         return (addOneCompany({ variables: company }))}, result]
 }

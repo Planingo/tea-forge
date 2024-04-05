@@ -15,6 +15,7 @@ import { useState } from 'react';
 import { useAddOneModule, useModules_tea } from '../../Tools/Authenticated/modules.js';
 import { Link } from 'react-router-dom';
 import { Layout } from '../Layout/Layout.js';
+import { Pathway } from '../../Types/pathway.js';
 
 export const Modules = () => {
     const onSearch = (e: any) => {
@@ -22,7 +23,7 @@ export const Modules = () => {
     } 
     const {modules, loading: loadingModules} = useModules_tea()
 	const [addOneModule, loading] = useAddOneModule()
-    const [isGrid, setIsGrid] = useState(true)
+    const [isGrid, setIsGrid] = useState(false)
     return <Layout>
     <Header 
         placeholder="Rechercher"
@@ -58,7 +59,7 @@ export const Modules = () => {
         isGrid ?
             <Gallery
                 datas={modules}
-                name="module"
+                name="modules"
             /> : 
             <GalleryList
                 columns={[
@@ -75,14 +76,21 @@ export const Modules = () => {
                     {
                         dataIndex: 'name',
                         key: 'name',
-                        title: 'name'
+                        title: 'name',
+                        sorter: (a: any, b: any) => a.name.localeCompare(b.name),
+                    },
+                    {
+                        dataIndex: 'pathways',
+                        key: 'pathways',
+                        title: 'pathways',
+                        render: (pathways: Pathway[]) => pathways?.map(pathway => <a href={`/pathways/${pathway.id}`}>{pathway.name}</a>),
                     },
                     {
                         dataIndex: 'actions',
                         key: 'actions',
                         title: 'actions',
-                        render: (actions: any) => <div className='actions'>
-                                <Link to={`/modules/1`} replace={true}>
+                        render: (actions: any, record: any) => <div className='actions'>
+                                <Link to={`/modules/${record.id}`} replace={true}>
                                     <Tooltip title={'Détail'} placement='bottom'>
                                         <ExportOutlined className='download' />
                                     </Tooltip>
@@ -100,7 +108,7 @@ export const Modules = () => {
                     }
                 ]}
                 datas={modules}
-                name="module" />
+                name="modules" />
     }
     </Layout>
 }

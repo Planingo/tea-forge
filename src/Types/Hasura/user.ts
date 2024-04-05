@@ -1,8 +1,7 @@
-import { UUID } from "crypto"
 import { Account } from "./account.js"
 
 export type User = {
-    id: UUID,
+    id: string,
     created_at: Date,
     updated_at: Date,
     firstname: string,

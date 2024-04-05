@@ -1,13 +1,17 @@
-import { UUID } from "crypto"
-import { Module } from "./module.js"
+import { Actions } from "./actions.js"
+import { Event } from "./event.js"
 
 export type Lesson = {
-    id: UUID
-    archived?: Boolean
-    created_at?: Date
-    updated_at: Date
+    id: string
     name: string
-    start_date: Date
-    end_date: Date
-    module: Module
+    start_date: string
+    end_date: string
+    module: {id: string, name: string}
+    pathway: {id: string, name: string}
+    events: Event[]
+    tags: string[]
+    actions: Actions
+    link: string
+    alt: string
+    src: string
 }

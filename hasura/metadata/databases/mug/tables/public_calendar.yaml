@@ -1,0 +1,25 @@
+table:
+  name: calendar
+  schema: public
+array_relationships:
+  - name: calendar_lessons
+    using:
+      foreign_key_constraint_on:
+        column: calendar_id
+        table:
+          name: calendar_lesson
+          schema: public
+  - name: module_calendars
+    using:
+      foreign_key_constraint_on:
+        column: calendar_id
+        table:
+          name: module_calendar
+          schema: public
+  - name: student_calendars
+    using:
+      foreign_key_constraint_on:
+        column: calendar_id
+        table:
+          name: student_calendar
+          schema: public

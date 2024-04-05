@@ -1,11 +1,14 @@
-import { UUID } from "crypto"
-import { User } from "./user.js"
+import { Actions } from "./actions.js"
 
 export type Professor = {
-    id: UUID
-    archived?: Boolean
-    created_at?: Date
-    updated_at: Date
-    user_id: UUID
-    user: User
+    id: string
+    name: string
+    firstname: string
+    lastname: string
+    email: string
+    tags: string[],
+    actions : Actions
+    link: string
+    alt: string
+    src: string
 }

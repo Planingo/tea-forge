@@ -1,0 +1,10 @@
+table:
+  name: student_pathway
+  schema: public
+object_relationships:
+  - name: pathway
+    using:
+      foreign_key_constraint_on: pathway_id
+  - name: student
+    using:
+      foreign_key_constraint_on: student_id
