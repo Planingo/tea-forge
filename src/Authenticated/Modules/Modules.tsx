@@ -16,9 +16,11 @@ import { useAddOneModule, useModules_tea } from '../../Tools/Authenticated/modul
 import { Link } from 'react-router-dom';
 import { Layout } from '../Layout/Layout.js';
 import { Pathway } from '../../Types/pathway.js';
+import { Module } from '../../Types/module.js';
+import { Actions } from '../../Types/actions.js';
 
 export const Modules = () => {
-    const onSearch = (e: any) => {
+    const onSearch = (e: string) => {
         console.log
     } 
     const {modules, loading: loadingModules} = useModules_tea()
@@ -77,7 +79,7 @@ export const Modules = () => {
                         dataIndex: 'name',
                         key: 'name',
                         title: 'name',
-                        sorter: (a: any, b: any) => a.name.localeCompare(b.name),
+                        sorter: (a: Module, b: Module) => a.name.localeCompare(b.name),
                     },
                     {
                         dataIndex: 'pathways',
@@ -89,7 +91,7 @@ export const Modules = () => {
                         dataIndex: 'actions',
                         key: 'actions',
                         title: 'actions',
-                        render: (actions: any, record: any) => <div className='actions'>
+                        render: (actions: Actions, record: Module) => <div className='actions'>
                                 <Link to={`/modules/${record.id}`} replace={true}>
                                     <Tooltip title={'Détail'} placement='bottom'>
                                         <ExportOutlined className='download' />

@@ -70,10 +70,7 @@ export const useProfessors = () => {
 
 export const useGetProfessorById = (id: string) => {
     const {data, ...result} = useQuery(getProfessorById, { variables: { id: id } })
-
-    console.log(data)
     const p = toProfessor(data?.professor_by_pk)
-    console.log(p)
 	return { professor: p, ...result }
 }
 

@@ -4,7 +4,7 @@ import { useLogin } from '../Tools/Account/login.hook.js'
 export const Login = () => {
     const login = useLogin()
 
-	const onSubmit = async (value: any) => {
+	const onSubmit = async (value: {email: string, password: string}) => {
 		await (await login)(value)
 	}
 	

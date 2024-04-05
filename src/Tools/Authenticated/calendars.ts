@@ -140,8 +140,8 @@ export const useSearchCalendars = () => {
 
     const {data,...result } = useQuery(SEARCH_CALENDARS, searchQuery)
   
-    const search = useDebouncedCallback((searchText: any) => {
-		const searchsTmp = searchText.split(" ").map((st: any) => `%${st}%`)
+    const search = useDebouncedCallback((searchText: string) => {
+		const searchsTmp = searchText.split(" ").map((st: string) => `%${st}%`)
 		if (searchText) setSearchQuery({variables: {  searchText: searchsTmp[0] }})
 		else setSearchQuery({variables: { searchText:"%%" }})
     }, 500)
