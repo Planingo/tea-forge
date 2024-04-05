@@ -96,7 +96,7 @@ const toLesson = (lesson: HasuraLesson): Lesson => {
         },
         link: `/lessons/${lesson?.id}`,
         alt: `${lesson?.name.toUpperCase()}`,
-        src: `https://avatars.bugsyaya.dev/150/${lesson?.id}`,
+        photo: `https://avatars.bugsyaya.dev/150/${lesson?.id}`,
     }
 }
 

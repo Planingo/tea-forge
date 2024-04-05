@@ -7,5 +7,5 @@ export type Pathway = {
     actions: Actions
     link: string
     alt: string
-    src: string
+    photo: string
 }

@@ -33,7 +33,7 @@ export const useModules_tea = () => {
         },
         link: `/modules/${module.id}`,
         alt: module.name,
-        src: `https://avatars.bugsyaya.dev/150/${module.id}`,
+        photo: `https://avatars.bugsyaya.dev/150/${module.id}`,
     }))
 
     return {modules, ...result}

@@ -65,11 +65,11 @@ export const Pathways = () => {
             <GalleryList
                 columns={[
                     {
-                        dataIndex: 'src',
-                        key: 'src',
-                        render: (src: string) => 
+                        dataIndex: 'photo',
+                        key: 'photo',
+                        render: (photo: string) => 
                             (<img
-                                src={src}
+                                src={photo}
                                 alt="placeholder"
                             />),
                         title: 'Photo'
