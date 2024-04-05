@@ -22,7 +22,7 @@ export const Pathways = () => {
     } 
     const {pathways, loading: loadingPathways} = usePathways_tea()
 	const [addOnePathway, loading] = useAddOnePathway()
-    const [isGrid, setIsGrid] = useState(true)
+    const [isGrid, setIsGrid] = useState(false)
     return <Layout>
     <Header 
         placeholder="Rechercher"
@@ -58,7 +58,7 @@ export const Pathways = () => {
         isGrid ?
             <Gallery
                 datas={pathways}
-                name="pathway"
+                name="pathways"
             /> : 
             <GalleryList
                 columns={[
@@ -110,7 +110,7 @@ export const Pathways = () => {
                     }
                 ]}
                 datas={pathways}
-                name="pathway" />
+                name="pathways" />
     }
     </Layout>
 }

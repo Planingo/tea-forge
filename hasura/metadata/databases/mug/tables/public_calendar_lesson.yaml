@@ -1,0 +1,10 @@
+table:
+  name: calendar_lesson
+  schema: public
+object_relationships:
+  - name: calendar
+    using:
+      foreign_key_constraint_on: calendar_id
+  - name: lesson
+    using:
+      foreign_key_constraint_on: lesson_id

@@ -1,4 +1,5 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
+import { Pathway as HasuraPathway } from "../../Types/Hasura/pathway.js";
 import { Pathway } from "../../Types/pathway.js";
 
 const getPathwaysQuerie = gql`
@@ -12,7 +13,7 @@ const getPathwaysQuerie = gql`
 
 export const usePathways_tea = () => {
 	const {data, ...result} = useQuery(getPathwaysQuerie)
-    const pathways = data?.pathway.map((pathway: Pathway) => ({
+    const pathways: Pathway = data?.pathway.map((pathway: HasuraPathway) => ({
         id: pathway.id,
         name: pathway.name,
         tags: [],
@@ -46,6 +47,6 @@ export const useAddOnePathway = () => {
     },
     )
 
-	return [(pathway: Pathway) => {
+	return [(pathway: HasuraPathway) => {
         return (addOnePathway({ variables: pathway }))}, result]
 }

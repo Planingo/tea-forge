@@ -22,7 +22,7 @@ export const Rooms = () => {
     } 
     const {rooms, loading: loadingRooms} = useRooms()
 	const [addOneRoom, loading] = useAddOneRoom()
-    const [isGrid, setIsGrid] = useState(true)
+    const [isGrid, setIsGrid] = useState(false)
     return <Layout>
     <Header 
         placeholder="Rechercher"
@@ -58,7 +58,7 @@ export const Rooms = () => {
         isGrid ?
             <Gallery
                 datas={rooms}
-                name="room"
+                name="rooms"
             /> : 
             <GalleryList
                 columns={[
@@ -105,7 +105,7 @@ export const Rooms = () => {
                     }
                 ]}
                 datas={rooms}
-                name="room" />
+                name="rooms" />
     }
     </Layout>
 }

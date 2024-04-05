@@ -1,0 +1,10 @@
+table:
+  name: module_lesson
+  schema: public
+object_relationships:
+  - name: lesson
+    using:
+      foreign_key_constraint_on: lesson_id
+  - name: module
+    using:
+      foreign_key_constraint_on: module_id

@@ -1,10 +1,12 @@
-import { UUID } from "crypto"
+import { Actions } from "./actions.js"
 
 export type Room = {
-    id: UUID
-    archived?: Boolean
-    created_at?: Date
-    updated_at: Date
+    id: string
     name: string
     max_seats: number
+    tags: string[]
+    actions: Actions
+    link: string
+    alt: string
+    src: string
 }

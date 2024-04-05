@@ -22,7 +22,7 @@ export const Professors = () => {
     } 
     const {professors, loading: loadingProfessors} = useProfessors()
 	const [addOneProfessor, loading] = useAddOneProfessor()
-    const [isGrid, setIsGrid] = useState(true)
+    const [isGrid, setIsGrid] = useState(false)
     return <Layout>
     <Header 
         placeholder="Rechercher"
@@ -58,7 +58,7 @@ export const Professors = () => {
         isGrid ?
             <Gallery
                 datas={professors}
-                name="professor"
+                name="professors"
             /> : 
             <GalleryList
                 columns={[
@@ -73,19 +73,21 @@ export const Professors = () => {
                         title: 'Photo'
                     },
                     {
-                        dataIndex: 'email',
-                        key: 'email',
-                        title: 'email'
+                        dataIndex: 'lastname',
+                        key: 'lastname',
+                        title: 'lastname',
+                        sorter: (a: any, b: any) => a.lastname.localeCompare(b.lastname),
                     },
                     {
                         dataIndex: 'firstname',
                         key: 'firstname',
-                        title: 'firstname'
+                        title: 'firstname',
+                        sorter: (a: any, b: any) => a.firstname.localeCompare(b.firstname),
                     },
                     {
-                        dataIndex: 'lastname',
-                        key: 'lastname',
-                        title: 'lastname'
+                        dataIndex: 'email',
+                        key: 'email',
+                        title: 'email'
                     },
                     {
                         dataIndex: 'actions',
@@ -110,7 +112,7 @@ export const Professors = () => {
                     }
                 ]}
                 datas={professors}
-                name="professor" />
+                name="professors" />
     }
     </Layout>
 }

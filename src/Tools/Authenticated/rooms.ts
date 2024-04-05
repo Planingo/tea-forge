@@ -1,4 +1,5 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
+import { Room as HasuraRoom } from "../../Types/Hasura/room.js";
 import { Room } from "../../Types/room.js";
 
 const getRoomsQuerie = gql`
@@ -13,7 +14,7 @@ const getRoomsQuerie = gql`
 
 export const useRooms = () => {
 	const {data, ...result} = useQuery(getRoomsQuerie)
-    const rooms = data?.room.map((room: Room) => ({
+    const rooms: Room = data?.room.map((room: HasuraRoom) => ({
         id: room.id,
         name: `${room.name.toUpperCase()}`,
         max_seats: room.max_seats,
@@ -47,6 +48,6 @@ export const useAddOneRoom = () => {
     },
     )
 
-	return [(room: Room) => {
+	return [(room: HasuraRoom) => {
         return (addOneRoom({ variables: room }))}, result]
 }

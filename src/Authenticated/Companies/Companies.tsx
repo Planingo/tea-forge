@@ -22,7 +22,7 @@ export const Companies = () => {
     } 
     const {companies, loading: loadingCompanies} = useCompanies()
 	const [addOneCompany, loading] = useAddOneCompany()
-    const [isGrid, setIsGrid] = useState(true)
+    const [isGrid, setIsGrid] = useState(false)
     return <Layout>
     <Header 
         placeholder="Rechercher"
@@ -58,7 +58,7 @@ export const Companies = () => {
         isGrid ?
             <Gallery
                 datas={companies}
-                name="company"
+                name="companies"
             /> : 
             <GalleryList
                 columns={[
@@ -100,7 +100,7 @@ export const Companies = () => {
                     }
                 ]}
                 datas={companies}
-                name="company" />
+                name="companies" />
     }
     </Layout>
 }
