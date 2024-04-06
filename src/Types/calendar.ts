@@ -8,5 +8,5 @@ export type Calendar = {
     actions : Actions
     link: string
     alt: string
-    src: string
+    photo: string
 }

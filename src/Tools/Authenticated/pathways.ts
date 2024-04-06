@@ -24,7 +24,7 @@ export const usePathways_tea = () => {
         },
         link: `/pathways/${pathway.id}`,
         alt: pathway.name,
-        src: `https://avatars.bugsyaya.dev/150/${pathway.id}`,
+        photo: `https://avatars.bugsyaya.dev/150/${pathway.id}`,
     }))
 
     return {pathways, ...result}

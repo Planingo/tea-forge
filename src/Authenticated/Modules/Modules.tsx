@@ -3,21 +3,16 @@ import {
     Gallery,
     ModuleForm,
     TagsOutlined,
-    Tooltip,
-    DownloadOutlined,
-    CloudUploadOutlined,
-    DeleteOutlined,
-    ExportOutlined,
+    Actions,
     Header,
     Spin
 } from '@planingo/ditto';
 import { useState } from 'react';
 import { useAddOneModule, useModules_tea } from '../../Tools/Authenticated/modules.js';
-import { Link } from 'react-router-dom';
 import { Layout } from '../Layout/Layout.js';
 import { Pathway } from '../../Types/pathway.js';
 import { Module } from '../../Types/module.js';
-import { Actions } from '../../Types/actions.js';
+import { Actions as ActionsType } from '../../Types/actions.js';
 
 export const Modules = () => {
     const onSearch = (e: string) => {
@@ -66,47 +61,29 @@ export const Modules = () => {
             <GalleryList
                 columns={[
                     {
-                        dataIndex: 'src',
-                        key: 'src',
-                        render: (src: string) => 
+                        key: 'photo',
+                        render: (photo: string) => 
                             (<img
-                                src={src}
+                                src={photo}
                                 alt="placeholder"
                             />),
-                        title: 'Photo'
                     },
                     {
-                        dataIndex: 'name',
                         key: 'name',
-                        title: 'name',
                         sorter: (a: Module, b: Module) => a.name.localeCompare(b.name),
                     },
                     {
-                        dataIndex: 'pathways',
                         key: 'pathways',
-                        title: 'pathways',
                         render: (pathways: Pathway[]) => pathways?.map(pathway => <a href={`/pathways/${pathway.id}`}>{pathway.name}</a>),
                     },
                     {
-                        dataIndex: 'actions',
                         key: 'actions',
-                        title: 'actions',
-                        render: (actions: Actions, record: Module) => <div className='actions'>
-                                <Link to={`/modules/${record.id}`} replace={true}>
-                                    <Tooltip title={'Détail'} placement='bottom'>
-                                        <ExportOutlined className='download' />
-                                    </Tooltip>
-                                </Link>
-                            <Tooltip title={actions.downloadTitle || 'Télécharger'} placement='bottom'>
-                                <DownloadOutlined className='download' />
-                            </Tooltip>
-                            <Tooltip title={actions.cloudTitle || 'Envoyer'} placement='bottom'>
-                                <CloudUploadOutlined className='cloud' />
-                            </Tooltip>
-                            <Tooltip title={actions.deleteTitle || 'Supprimer'} placement='bottom'>
-                                <DeleteOutlined className='delete' />
-                            </Tooltip>
-                        </div>
+                        render: (actions: ActionsType, record: Module) => <Actions
+                            to={`/modules/${record.id}`}
+                            downloadTitle={actions.downloadTitle}
+                            cloudTitle={actions.cloudTitle}
+                            deleteTitle={actions.deleteTitle}
+                        />
                     }
                 ]}
                 datas={modules}

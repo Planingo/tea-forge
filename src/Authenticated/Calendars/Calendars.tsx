@@ -1,7 +1,9 @@
-import { Gallery, StudentForm, Header, UserOutlined } from '@planingo/ditto';
+import { Gallery, StudentForm, Header, UserOutlined, GalleryList, Actions } from '@planingo/ditto';
 import { useState } from 'react';
 import { Layout } from '../Layout/Layout.js';
 import { useAddOneCalendar, useCountCalendar, useSearchCalendars } from '../../Tools/Authenticated/calendars.js';
+import { Calendar } from '../../Types/calendar.js';
+import { Actions as ActionsType } from '../../Types/actions.js';
 
 export const Calendars = () => {
     const { search, calendars, loading: loadingCalendars } = useSearchCalendars()
@@ -31,7 +33,29 @@ export const Calendars = () => {
                 loading={loadingCalendars}
                 count={count}
             />
-        : <></>
+        : <GalleryList
+            columns={[
+                {
+                    key: 'photo',
+                    render: (photo: string) => 
+                        (<img
+                            src={photo}
+                            alt="placeholder"
+                        />),
+                },
+                { key: 'name' },
+                {
+                    key: 'actions',
+                    render: (actions: ActionsType, record: Calendar) => <Actions
+                        to={`/calendars/${record.id}`}
+                        downloadTitle={actions.downloadTitle}
+                        cloudTitle={actions.cloudTitle}
+                        deleteTitle={actions.deleteTitle}
+                    />
+                }
+            ]}
+            datas={calendars}
+            name="calendars" />
         }
     </Layout>
 }

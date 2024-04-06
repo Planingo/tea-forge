@@ -24,7 +24,7 @@ export const useCompanies = () => {
         },
         link: `/companies/${company.id}`,
         alt: company.name,
-        src: `https://avatars.bugsyaya.dev/150/${company.id}`,
+        photo: `https://avatars.bugsyaya.dev/150/${company.id}`,
     }))
 
     return {companies, ...result}

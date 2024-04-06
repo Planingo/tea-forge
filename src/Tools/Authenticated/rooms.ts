@@ -26,7 +26,7 @@ export const useRooms = () => {
         },
         link: `/rooms/${room.id}`,
         alt: `${room.name.toUpperCase()}`,
-        src: `https://avatars.bugsyaya.dev/150/${room.id}`,
+        photo: `https://avatars.bugsyaya.dev/150/${room.id}`,
     }))
     return {rooms, ...result}
 }

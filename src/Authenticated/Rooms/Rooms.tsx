@@ -3,19 +3,14 @@ import {
     Gallery,
     RoomForm,
     ShopOutlined,
-    Tooltip,
-    DownloadOutlined,
-    CloudUploadOutlined,
-    DeleteOutlined,
-    ExportOutlined,
+    Actions,
     Header,
     Spin
 } from '@planingo/ditto';
 import { useState } from 'react';
 import { useAddOneRoom, useRooms } from '../../Tools/Authenticated/rooms.js';
-import { Link } from 'react-router-dom';
 import { Layout } from '../Layout/Layout.js';
-import { Actions } from '../../Types/actions.js';
+import { Actions as ActionsType } from '../../Types/actions.js';
 import { Room } from '../../Types/room.js';
 
 export const Rooms = () => {
@@ -65,45 +60,23 @@ export const Rooms = () => {
             <GalleryList
                 columns={[
                     {
-                        dataIndex: 'src',
-                        key: 'src',
-                        render: (src: string) => 
+                        key: 'photo',
+                        render: (photo: string) => 
                             (<img
-                                src={src}
+                                src={photo}
                                 alt="placeholder"
                             />),
-                        title: 'Photo'
                     },
+                    { key: 'name' },
+                    { key: 'max_seats' },
                     {
-                        dataIndex: 'name',
-                        key: 'name',
-                        title: 'name'
-                    },
-                    {
-                        dataIndex: 'max_seats',
-                        key: 'max_seats',
-                        title: 'Max seats'
-                    },
-                    {
-                        dataIndex: 'actions',
                         key: 'actions',
-                        title: 'actions',
-                        render: (actions: Actions, record: Room) => <div className='actions'>
-                                <Link to={`/rooms/${record.id}`} replace={true}>
-                                    <Tooltip title={'Détail'} placement='bottom'>
-                                        <ExportOutlined className='download' />
-                                    </Tooltip>
-                                </Link>
-                            <Tooltip title={actions.downloadTitle || 'Télécharger'} placement='bottom'>
-                                <DownloadOutlined className='download' />
-                            </Tooltip>
-                            <Tooltip title={actions.cloudTitle || 'Envoyer'} placement='bottom'>
-                                <CloudUploadOutlined className='cloud' />
-                            </Tooltip>
-                            <Tooltip title={actions.deleteTitle || 'Supprimer'} placement='bottom'>
-                                <DeleteOutlined className='delete' />
-                            </Tooltip>
-                        </div>
+                        render: (actions: ActionsType, record: Room) => <Actions
+                            to={`/rooms/${record.id}`}
+                            downloadTitle={actions.downloadTitle}
+                            cloudTitle={actions.cloudTitle}
+                            deleteTitle={actions.deleteTitle}
+                        />
                     }
                 ]}
                 datas={rooms}

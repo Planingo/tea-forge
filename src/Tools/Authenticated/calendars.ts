@@ -93,7 +93,7 @@ const toCalendar = (calendar: HasuraCalendar | undefined | null): Calendar | nul
         },
         link: `/calendars/${calendar.id}`,
         alt: `${calendar.name?.toUpperCase()}`,
-        src: `https://avatars.bugsyaya.dev/150/${calendar.id}`,
+        photo: `https://avatars.bugsyaya.dev/150/${calendar.id}`,
     }
 }
 

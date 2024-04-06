@@ -53,7 +53,7 @@ const toProfessor = (professor: HasuraProfessor | undefined | null): Professor |
         },
         link: `/professors/${professor.user.id}`,
         alt: `${professor.user.lastname?.toUpperCase()} ${professor.user.firstname}`,
-        src: `https://avatars.bugsyaya.dev/150/${professor.user.id}`,
+        photo: `https://avatars.bugsyaya.dev/150/${professor.user.id}`,
     }
 }
 

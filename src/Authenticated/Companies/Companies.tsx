@@ -3,19 +3,14 @@ import {
     Gallery,
     CompanyForm,
     CompanyOutlined,
-    Tooltip,
-    DownloadOutlined,
-    CloudUploadOutlined,
-    DeleteOutlined,
-    ExportOutlined,
     Header,
-    Spin
+    Spin,
+    Actions
 } from '@planingo/ditto';
 import { useState } from 'react';
 import { useAddOneCompany, useCompanies } from '../../Tools/Authenticated/companies.js';
-import { Link } from 'react-router-dom';
 import { Layout } from '../Layout/Layout.js';
-import { Actions } from '../../Types/actions.js';
+import { Actions as ActionsType } from '../../Types/actions.js';
 import { Company } from '../../Types/company.js';
 
 export const Companies = () => {
@@ -65,40 +60,23 @@ export const Companies = () => {
             <GalleryList
                 columns={[
                     {
-                        dataIndex: 'src',
-                        key: 'src',
-                        render: (src: string) => 
+                        key: 'photo',
+                        render: (photo: string) => 
                             (<img
-                                src={src}
+                                src={photo}
                                 alt="placeholder"
                             />),
-                        title: 'Photo'
                     },
+                    { key: 'name' },
                     {
-                        dataIndex: 'name',
-                        key: 'name',
-                        title: 'name'
-                    },
-                    {
-                        dataIndex: 'actions',
                         key: 'actions',
                         title: 'actions',
-                        render: (actions: Actions, record: Company) => <div className='actions'>
-                                <Link to={`/companies/${record.id}`} replace={true}>
-                                    <Tooltip title={'Détail'} placement='bottom'>
-                                        <ExportOutlined className='download' />
-                                    </Tooltip>
-                                </Link>
-                            <Tooltip title={actions.downloadTitle || 'Télécharger'} placement='bottom'>
-                                <DownloadOutlined className='download' />
-                            </Tooltip>
-                            <Tooltip title={actions.cloudTitle || 'Envoyer'} placement='bottom'>
-                                <CloudUploadOutlined className='cloud' />
-                            </Tooltip>
-                            <Tooltip title={actions.deleteTitle || 'Supprimer'} placement='bottom'>
-                                <DeleteOutlined className='delete' />
-                            </Tooltip>
-                        </div>
+                        render: (actions: ActionsType, record: Company) => <Actions
+                            to={`/companies/${record.id}`}
+                            downloadTitle={actions.downloadTitle}
+                            cloudTitle={actions.cloudTitle}
+                            deleteTitle={actions.deleteTitle}
+                        />
                     }
                 ]}
                 datas={companies}

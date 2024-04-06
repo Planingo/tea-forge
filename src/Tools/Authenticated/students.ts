@@ -152,7 +152,7 @@ const toStudent = (student: HasuraStudent): Student => {
         },
         link: `/students/${student?.user.id}`,
         alt: `${student?.user.lastname?.toUpperCase()} ${student?.user.firstname}`,
-        src: `https://avatars.bugsyaya.dev/150/${student?.user.id}`,
+        photo: `https://avatars.bugsyaya.dev/150/${student?.user.id}`,
     }
 }
 
