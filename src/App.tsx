@@ -1,5 +1,5 @@
 import { ApolloProvider } from "@apollo/client"
-import { IntlProvider, ThemeProvider } from "@planingo/ditto"
+import { IntlProvider, ThemeProvider } from "@pixel-brew/bubble-craft"
 import { createContext } from "react"
 import {
   Route as ReactRoute,

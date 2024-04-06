@@ -1,4 +1,4 @@
-import { Header, StudentForm, UserOutlined } from "@planingo/ditto"
+import { Header, StudentForm, UserOutlined } from "@pixel-brew/bubble-craft"
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useAddOneStudent, useGetStudentById } from "../../Tools/Authenticated/students.js"

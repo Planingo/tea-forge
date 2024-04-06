@@ -1,4 +1,4 @@
-import { Header, LessonForm, UserOutlined } from "@planingo/ditto"
+import { Header, LessonForm, UserOutlined } from "@pixel-brew/bubble-craft"
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useAddOneLesson, useGetLessonById } from "../../Tools/Authenticated/lessons.js"

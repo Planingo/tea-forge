@@ -1,4 +1,4 @@
-import { Header, ProfessorForm, UserOutlined } from "@planingo/ditto"
+import { Header, ProfessorForm, UserOutlined } from "@pixel-brew/bubble-craft"
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useAddOneProfessor, useGetProfessorById } from "../../Tools/Authenticated/professors.js"

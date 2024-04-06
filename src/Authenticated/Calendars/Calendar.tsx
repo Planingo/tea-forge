@@ -1,4 +1,9 @@
-import { Calendar as CalendarDitto, Header, StudentForm, UserOutlined } from "@planingo/ditto"
+import {
+  Calendar as CalendarBubbleCraft,
+  Header,
+  StudentForm,
+  UserOutlined,
+} from "@pixel-brew/bubble-craft"
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useAddOneCalendar, useGetCalendarById } from "../../Tools/Authenticated/calendars.js"
@@ -50,7 +55,7 @@ export const Calendar = () => {
             <h1>Contraintes</h1>
           </div>
           <div>
-            <CalendarDitto events={[]} />
+            <CalendarBubbleCraft events={[]} />
           </div>
         </div>
       }

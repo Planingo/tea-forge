@@ -6,7 +6,7 @@ import {
   ModuleForm,
   Spin,
   TagsOutlined,
-} from "@planingo/ditto"
+} from "@pixel-brew/bubble-craft"
 import { useState } from "react"
 import { useAddOneModule, useModules_tea } from "../../Tools/Authenticated/modules.js"
 import { Actions as ActionsType } from "../../Types/actions.js"

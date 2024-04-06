@@ -6,7 +6,7 @@ import {
   ProfessorForm,
   Spin,
   TeamOutlined,
-} from "@planingo/ditto"
+} from "@pixel-brew/bubble-craft"
 import { useState } from "react"
 import { useAddOneProfessor, useProfessors } from "../../Tools/Authenticated/professors.js"
 import { Actions as ActionsType } from "../../Types/actions.js"

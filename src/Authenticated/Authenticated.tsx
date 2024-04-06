@@ -1,4 +1,4 @@
-import { Navigation, Roles } from "@planingo/ditto"
+import { Navigation, Roles } from "@pixel-brew/bubble-craft"
 import { useContext } from "react"
 import { Navigate, Outlet, useLocation } from "react-router-dom"
 import packageJson from "../../package.json"

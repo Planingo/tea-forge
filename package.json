@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.9.6",
-    "@planingo/ditto": "^2.2.16",
+    "@pixel-brew/bubble-craft": "^2.3.0",
     "graphql": "^16.8.1",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
@@ -41,7 +41,10 @@
   },
   "packageManager": "yarn@4.1.1",
   "resolutions": {
-    "@planingo/ditto": "portal:/Users/bugsyaya/Desktop/Planingo/Ditto",
-    "@pixel-brew/bubble-craft": "portal:/Users/bugsyaya/Desktop/Planingo/Ditto"
+    "@pixel-brew/bubble-craft": "portal:/Users/bugsyaya/Desktop/Planingo/bubble-craft"
+  },
+  "peerDependencies": {
+    "@fullcalendar/resource": "*",
+    "mocha": "*"
   }
 }

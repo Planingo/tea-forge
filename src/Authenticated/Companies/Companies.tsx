@@ -6,7 +6,7 @@ import {
   GalleryList,
   Header,
   Spin,
-} from "@planingo/ditto"
+} from "@pixel-brew/bubble-craft"
 import { useState } from "react"
 import { useAddOneCompany, useCompanies } from "../../Tools/Authenticated/companies.js"
 import { Actions as ActionsType } from "../../Types/actions.js"

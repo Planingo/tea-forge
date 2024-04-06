@@ -6,7 +6,7 @@ import {
   RoomForm,
   ShopOutlined,
   Spin,
-} from "@planingo/ditto"
+} from "@pixel-brew/bubble-craft"
 import { useState } from "react"
 import { useAddOneRoom, useRooms } from "../../Tools/Authenticated/rooms.js"
 import { Actions as ActionsType } from "../../Types/actions.js"
