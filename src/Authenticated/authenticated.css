@@ -1,23 +1,23 @@
 .authentificated {
-    display: grid;
-    grid-template-columns: auto 1fr;
+  display: grid;
+  grid-template-columns: auto 1fr;
 }
 
 .right > .footer {
-    width: 100%;
-    background-color: white;
-    position: fixed;
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  width: 100%;
+  background-color: white;
+  position: fixed;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .right > .footer > p {
-    width: fit-content !important;
-    padding: 0;
-    margin: 0;
-    height: 1.5em;
-    font-weight: 300;
-    font-size: smaller;
+  width: fit-content !important;
+  padding: 0;
+  margin: 0;
+  height: 1.5em;
+  font-weight: 300;
+  font-size: smaller;
 }
