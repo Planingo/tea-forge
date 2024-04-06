@@ -3,20 +3,15 @@ import {
     Gallery,
     ProfessorForm,
     TeamOutlined,
-    Tooltip,
-    DownloadOutlined,
-    CloudUploadOutlined,
-    DeleteOutlined,
-    ExportOutlined,
+    Actions,
     Header,
     Spin
 } from '@planingo/ditto';
 import { useState } from 'react';
 import { useAddOneProfessor, useProfessors } from '../../Tools/Authenticated/professors.js';
-import { Link } from 'react-router-dom';
 import { Layout } from '../Layout/Layout.js';
 import { Professor } from '../../Types/professor.js';
-import { Actions } from '../../Types/actions.js';
+import { Actions as ActionsType } from '../../Types/actions.js';
 
 export const Professors = () => {
     const onSearch = (e: string) => {
@@ -65,52 +60,30 @@ export const Professors = () => {
             <GalleryList
                 columns={[
                     {
-                        dataIndex: 'photo',
                         key: 'photo',
                         render: (photo: string) => 
                             (<img
                                 src={photo}
                                 alt="placeholder"
                             />),
-                        title: 'Photo'
                     },
                     {
-                        dataIndex: 'lastname',
                         key: 'lastname',
-                        title: 'lastname',
                         sorter: (a: Professor, b: Professor) => a.lastname.localeCompare(b.lastname),
                     },
                     {
-                        dataIndex: 'firstname',
                         key: 'firstname',
-                        title: 'firstname',
                         sorter: (a: Professor, b: Professor) => a.firstname.localeCompare(b.firstname),
                     },
+                    { key: 'email' },
                     {
-                        dataIndex: 'email',
-                        key: 'email',
-                        title: 'email'
-                    },
-                    {
-                        dataIndex: 'actions',
                         key: 'actions',
-                        title: 'actions',
-                        render: (actions: Actions, record: Professor) => <div className='actions'>
-                                <Link to={`/professors/${record.id}`} replace={true}>
-                                    <Tooltip title={'Détail'} placement='bottom'>
-                                        <ExportOutlined className='download' />
-                                    </Tooltip>
-                                </Link>
-                            <Tooltip title={actions.downloadTitle || 'Télécharger'} placement='bottom'>
-                                <DownloadOutlined className='download' />
-                            </Tooltip>
-                            <Tooltip title={actions.cloudTitle || 'Envoyer'} placement='bottom'>
-                                <CloudUploadOutlined className='cloud' />
-                            </Tooltip>
-                            <Tooltip title={actions.deleteTitle || 'Supprimer'} placement='bottom'>
-                                <DeleteOutlined className='delete' />
-                            </Tooltip>
-                        </div>
+                        render: (actions: ActionsType, record: Professor) => <Actions
+                            to={`/professors/${record.id}`}
+                            downloadTitle={actions.downloadTitle}
+                            cloudTitle={actions.cloudTitle}
+                            deleteTitle={actions.deleteTitle}
+                        />
                     }
                 ]}
                 datas={professors}

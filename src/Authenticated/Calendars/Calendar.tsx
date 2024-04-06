@@ -40,7 +40,7 @@ export const Calendar = () => {
                 secondActioning: loading,
                 onSecondAction: addOneCalendar,
                 Info: <div className="infos">
-                    <img src={calendar?.src} alt={calendar?.alt}/>
+                    <img src={calendar?.photo} alt={calendar?.alt}/>
                     <div className="info">
                         <p>{calendar?.name.toUpperCase()}</p>
                     </div>

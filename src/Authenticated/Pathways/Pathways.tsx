@@ -3,19 +3,14 @@ import {
     Gallery,
     PathwayForm,
     ExperimentOutlined,
-    Tooltip,
-    DownloadOutlined,
-    CloudUploadOutlined,
-    DeleteOutlined,
-    ExportOutlined,
+    Actions,
     Header,
     Spin
 } from '@planingo/ditto';
 import { useState } from 'react';
 import { useAddOnePathway, usePathways_tea } from '../../Tools/Authenticated/pathways.js';
-import { Link } from 'react-router-dom';
 import { Layout } from '../Layout/Layout.js';
-import { Actions } from '../../Types/actions.js';
+import { Actions as ActionsType } from '../../Types/actions.js';
 import { Pathway } from '../../Types/pathway.js';
 
 export const Pathways = () => {
@@ -65,50 +60,24 @@ export const Pathways = () => {
             <GalleryList
                 columns={[
                     {
-                        dataIndex: 'photo',
                         key: 'photo',
                         render: (photo: string) => 
                             (<img
                                 src={photo}
                                 alt="placeholder"
                             />),
-                        title: 'Photo'
                     },
+                    { key: 'email' },
+                    { key: 'firstname' },
+                    { key: 'lastname' },
                     {
-                        dataIndex: 'email',
-                        key: 'email',
-                        title: 'email'
-                    },
-                    {
-                        dataIndex: 'firstname',
-                        key: 'firstname',
-                        title: 'firstname'
-                    },
-                    {
-                        dataIndex: 'lastname',
-                        key: 'lastname',
-                        title: 'lastname'
-                    },
-                    {
-                        dataIndex: 'actions',
                         key: 'actions',
-                        title: 'actions',
-                        render: (actions: Actions, record: Pathway) => <div className='actions'>
-                                <Link to={`/pathways/${record.id}`} replace={true}>
-                                    <Tooltip title={'Détail'} placement='bottom'>
-                                        <ExportOutlined className='download' />
-                                    </Tooltip>
-                                </Link>
-                            <Tooltip title={actions.downloadTitle || 'Télécharger'} placement='bottom'>
-                                <DownloadOutlined className='download' />
-                            </Tooltip>
-                            <Tooltip title={actions.cloudTitle || 'Envoyer'} placement='bottom'>
-                                <CloudUploadOutlined className='cloud' />
-                            </Tooltip>
-                            <Tooltip title={actions.deleteTitle || 'Supprimer'} placement='bottom'>
-                                <DeleteOutlined className='delete' />
-                            </Tooltip>
-                        </div>
+                        render: (actions: ActionsType, record: Pathway) => <Actions
+                            to={`/pathways/${record.id}`}
+                            downloadTitle={actions.downloadTitle}
+                            cloudTitle={actions.cloudTitle}
+                            deleteTitle={actions.deleteTitle}
+                        />
                     }
                 ]}
                 datas={pathways}

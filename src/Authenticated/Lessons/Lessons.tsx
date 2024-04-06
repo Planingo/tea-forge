@@ -3,24 +3,19 @@ import {
     Gallery,
     LessonForm,
     TagOutlined,
-    Tooltip,
-    DownloadOutlined,
-    CloudUploadOutlined,
-    DeleteOutlined,
-    ExportOutlined,
+    Actions,
     Header,
     Spin
 } from '@planingo/ditto';
 import { useState } from 'react';
 import { useAddOneLesson, useLessons } from '../../Tools/Authenticated/lessons.js';
-import { Link } from 'react-router-dom';
 import { Layout } from '../Layout/Layout.js';
 import { useModules_tea } from '../../Tools/Authenticated/modules.js';
 import { Module } from '../../Types/module.js';
 import { Pathway } from '../../Types/pathway.js';
 import { uniqBy } from '../../../helper/uniq.js';
 import { Lesson } from '../../Types/lesson.js';
-import { Actions } from '../../Types/actions.js';
+import { Actions as ActionsType } from '../../Types/actions.js';
 
 export const Lessons = () => {
     const onSearch = (e: string) => {
@@ -71,75 +66,45 @@ export const Lessons = () => {
             <GalleryList
                 columns={[
                     {
-                        dataIndex: 'photo',
                         key: 'photo',
                         render: (photo: string) => 
                             (<img
                                 src={photo}
                                 alt="placeholder"
                             />),
-                        title: 'Photo'
                     },
                     {
-                        dataIndex: 'name',
                         key: 'name',
-                        title: 'name',
                         sorter: (a: Lesson, b: Lesson) => a.name.localeCompare(b.name),
                     },
+                    { key: 'start_date' },
+                    { key: 'end_date' },
                     {
-                        dataIndex: 'start_date',
-                        key: 'start_date',
-                        title: 'Start date',
-                    },
-                    {
-                        dataIndex: 'end_date',
-                        key: 'end_date',
-                        title: 'End date',
-                    },
-                    {
-                        dataIndex: 'module',
                         key: 'module',
-                        title: 'Module',
                         render: (module: Module) => <a href={`/modules/${module?.id}`}>{module?.name}</a>,
                         filters: uniqBy(lessons?.map((lesson: Lesson) => 
                             ({value: lesson.module.id, text: lesson.module.name})
                         ), ({value}: {value: string}) => value),
-                        filterSearch: true,
                         onFilter: (value: string, record: Lesson) => record.module.id === value,
                         sorter: (a: Lesson, b: Lesson) => a.name.localeCompare(b.name),
                     },
                     {
-                        dataIndex: 'pathway',
                         key: 'pathway',
-                        title: 'pathway',
                         render: (pathway: Pathway) => <a href={`/pathways/${pathway?.id}`}>{pathway?.name}</a>,
                         filters: uniqBy(lessons?.map((lesson: Lesson) => 
                             ({value: lesson.pathway?.id, text: lesson.pathway?.name})
                         ), ({value}: {value: string}) => value),
-                        filterSearch: true,
                         onFilter: (value: string, record: Lesson) => record?.pathway?.id === value,
                         sorter: (a: Lesson, b: Lesson) => a.name.localeCompare(b.name),
                     },
                     {
-                        dataIndex: 'actions',
                         key: 'actions',
-                        title: 'actions',
-                        render: (actions: Actions, record: Lesson) => <div className='actions'>
-                                <Link to={`/lessons/${record.id}`} replace={true}>
-                                    <Tooltip title={'Détail'} placement='bottom'>
-                                        <ExportOutlined className='download' />
-                                    </Tooltip>
-                                </Link>
-                            <Tooltip title={actions.downloadTitle || 'Télécharger'} placement='bottom'>
-                                <DownloadOutlined className='download' />
-                            </Tooltip>
-                            <Tooltip title={actions.cloudTitle || 'Envoyer'} placement='bottom'>
-                                <CloudUploadOutlined className='cloud' />
-                            </Tooltip>
-                            <Tooltip title={actions.deleteTitle || 'Supprimer'} placement='bottom'>
-                                <DeleteOutlined className='delete' />
-                            </Tooltip>
-                        </div>
+                        render: (actions: ActionsType, record: Lesson) => <Actions
+                            to={`/lessons/${record.id}`}
+                            downloadTitle={actions.downloadTitle}
+                            cloudTitle={actions.cloudTitle}
+                            deleteTitle={actions.deleteTitle}
+                        />
                     }
                 ]}
                 datas={lessons}

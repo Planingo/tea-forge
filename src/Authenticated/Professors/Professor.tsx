@@ -34,7 +34,7 @@ export const Professor = () => {
                 secondActioning: loading,
                 onSecondAction: addOneProfessor,
                 Info: <div className="infos">
-                    <img src={professor?.src} alt={professor?.alt}/>
+                    <img src={professor?.photo} alt={professor?.alt}/>
                     <div className="info">
                         <p>{professor?.lastname.toUpperCase()} {professor?.firstname}</p>
                         <p>{professor?.email}</p>

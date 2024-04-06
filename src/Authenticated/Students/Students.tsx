@@ -58,9 +58,7 @@ export const Students = () => {
                         key: 'firstname',
                         sorter: (a: Student, b: Student) => a.firstname.localeCompare(b.firstname),
                     },
-                    {
-                        key: 'email',
-                    },
+                    { key: 'email' },
                     {
                         key: 'pathway',
                         render: (pathway: Pathway) => <a href={`/pathways/${pathway?.id}`}>{pathway?.name}</a>,

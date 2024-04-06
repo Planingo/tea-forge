@@ -34,7 +34,7 @@ export const Lesson = () => {
                 secondActioning: loading,
                 onSecondAction: addOneLesson,
                 Info: <div className="infos">
-                    <img src={lesson?.src} alt={lesson?.alt}/>
+                    <img src={lesson?.photo} alt={lesson?.alt}/>
                     <div className="info">
                         <p>{lesson?.name.toUpperCase()}</p>
                     </div>
