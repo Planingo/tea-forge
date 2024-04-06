@@ -1,33 +1,33 @@
 .actions {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .infos {
-    display: flex;
-    column-gap: 0.7em;
+  display: flex;
+  column-gap: 0.7em;
 }
 
 .infos > img {
-    height: 3em;
+  height: 3em;
 }
 
 .infos > .info {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .infos > .info > p {
-    margin: 0;
+  margin: 0;
 }
 
 .infos > .info > p:first-child {
-    font-size: large;
-    font-weight: 700;
+  font-size: large;
+  font-weight: 700;
 }
 
 .infos > .info > p:last-child {
-    font-size: small;
-    font-size: 300;
+  font-size: small;
+  font-size: 300;
 }

@@ -1,1 +1,1 @@
-declare module '@planingo/ditto';
+declare module "@planingo/ditto"

@@ -1,5 +1,5 @@
-import { ResetPage } from '@planingo/ditto'
+import { ResetPage } from "@planingo/ditto"
 
 export const Reset = () => {
-    return <ResetPage onSubmit={console.log}/>
+  return <ResetPage onSubmit={console.log} />
 }
