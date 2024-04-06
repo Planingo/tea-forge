@@ -6,7 +6,7 @@ import {
   Header,
   PathwayForm,
   Spin,
-} from "@planingo/ditto"
+} from "@pixel-brew/bubble-craft"
 import { useState } from "react"
 import { useAddOnePathway, usePathways_tea } from "../../Tools/Authenticated/pathways.js"
 import { Actions as ActionsType } from "../../Types/actions.js"

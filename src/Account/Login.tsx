@@ -1,4 +1,4 @@
-import { LoginPage } from "@planingo/ditto"
+import { LoginPage } from "@pixel-brew/bubble-craft"
 import { useLogin } from "../Tools/Account/login.hook.js"
 
 export const Login = () => {

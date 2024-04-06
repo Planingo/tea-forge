@@ -1,4 +1,11 @@
-import { Actions, Gallery, GalleryList, Header, StudentForm, UserOutlined } from "@planingo/ditto"
+import {
+  Actions,
+  Gallery,
+  GalleryList,
+  Header,
+  StudentForm,
+  UserOutlined,
+} from "@pixel-brew/bubble-craft"
 import { useState } from "react"
 import { uniqBy } from "../../../helper/uniq.js"
 import {

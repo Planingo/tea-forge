@@ -6,7 +6,7 @@ import {
   LessonForm,
   Spin,
   TagOutlined,
-} from "@planingo/ditto"
+} from "@pixel-brew/bubble-craft"
 import { useState } from "react"
 import { uniqBy } from "../../../helper/uniq.js"
 import { useAddOneLesson, useLessons } from "../../Tools/Authenticated/lessons.js"

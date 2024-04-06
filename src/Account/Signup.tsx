@@ -1,4 +1,4 @@
-import { SignupPage } from "@planingo/ditto"
+import { SignupPage } from "@pixel-brew/bubble-craft"
 import { useCreateAccount } from "../Tools/Account/signup.hook.js"
 
 export const Signup = () => {

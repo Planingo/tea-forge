@@ -1,4 +1,4 @@
-import { Calendar, Tabs } from "@planingo/ditto"
+import { Calendar, Tabs } from "@pixel-brew/bubble-craft"
 import "./details.css"
 
 export const Details = ({
