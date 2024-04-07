@@ -2,17 +2,23 @@ import { Navigation, Roles } from "@pixel-brew/bubble-craft"
 import { useContext } from "react"
 import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom"
 import packageJson from "../../package.json"
-import { AuthentificationContexte } from "../App.js"
+import { AccountContexte, AuthentificationContexte } from "../App.js"
+import { useGetAccountById } from "../Tools/Authenticated/account.js"
 import "./authenticated.css"
 
 export const Authenticated = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const { token } = useContext(AuthentificationContexte)!
+  const { account: accountId } = useContext(AccountContexte)!
+
+  const { account } = useGetAccountById(accountId!)
+
+  console.log(account)
 
   if (token && location.pathname === "/")
     return (
-      <Navigation roles={[Roles.SUPER_ADMIN, Roles.PLANING_KEEPER]}>
+      <Navigation roles={[Roles.SUPER_ADMIN, Roles.PLANING_KEEPER]} email={account?.email}>
         <Navigate to="/calendars" replace={true} />
         <Outlet />
       </Navigation>

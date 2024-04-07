@@ -50,18 +50,28 @@ const titles: Record<string, string> = {
   "/companies": "Tea Forge - Companies",
   "/settings": "Tea Forge - Settings",
 }
+export const AccountContexte = createContext<
+  | {
+      account: string | undefined
+      setAccount: (account: string | undefined) => void
+    }
+  | undefined
+>(undefined)
 
 function App() {
   const [token, setToken] = useLocalStorageState<string | undefined>("token", undefined)
+  const [account, setAccount] = useLocalStorageState<string | undefined>("account", undefined)
   return (
     <AuthentificationContexte.Provider value={{ token, setToken }}>
-      <ThemeProvider>
-        <IntlProvider>
-          <ApolloProvider client={mug}>
-            <Routes />
-          </ApolloProvider>
-        </IntlProvider>
-      </ThemeProvider>
+      <AccountContexte.Provider value={{ account, setAccount }}>
+        <ThemeProvider>
+          <IntlProvider>
+            <ApolloProvider client={mug}>
+              <Routes />
+            </ApolloProvider>
+          </IntlProvider>
+        </ThemeProvider>
+      </AccountContexte.Provider>
     </AuthentificationContexte.Provider>
   )
 }

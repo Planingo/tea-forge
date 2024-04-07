@@ -1,4 +1,5 @@
 import { Account_Roles } from "./account_roles.js"
+import { Account_Settings } from "./account_settings.js"
 import { User } from "./user.js"
 
 export type Account = {
@@ -10,6 +11,7 @@ export type Account = {
   created_at: Date
   updated_at: Date
   account_roles: Account_Roles[]
+  account_settings: Account_Settings[]
   user: User
 }
 

@@ -1,0 +1,18 @@
+.hours {
+  display: flex;
+  flex-direction: column;
+}
+
+.day {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.5em;
+}
+
+.day > p {
+  text-align: end;
+}
+
+.day > .hour {
+  text-align: start;
+}
