@@ -82,25 +82,32 @@ const getCalendarById = gql`
   }
 `
 
-const toCalendar = (calendar: HasuraCalendar | undefined | null): Calendar | null => {
-  if (!calendar) return null
-
+export const toCalendar = (calendar: HasuraCalendar): Calendar => {
   return {
-    id: calendar.id,
-    lessons: calendar.module_calendars,
-    name: calendar.name?.toUpperCase(),
+    id: calendar?.id,
+    lessons: calendar?.module_calendars,
+    name: calendar?.name?.toUpperCase(),
     actions: {
-      downloadTitle: `Télécharger le calendrier pour ${calendar.name?.toUpperCase()}`,
-      cloudTitle: `Envoyer le calendrier à ${calendar.name?.toUpperCase()}`,
-      deleteTitle: `Supprimer l'étudtiant ${calendar.name?.toUpperCase()}`,
+      downloadTitle: {
+        id: "Télécharger le calendrier pour",
+        values: `${calendar?.name.toUpperCase()}`,
+      },
+      cloudTitle: {
+        id: "Envoyer le calendrier",
+        values: `${calendar?.name.toUpperCase()}`,
+      },
+      deleteTitle: {
+        id: "Archiver le calendrier",
+        values: `${calendar?.name.toUpperCase()}`,
+      },
     },
-    link: `/calendars/${calendar.id}`,
-    alt: `${calendar.name?.toUpperCase()}`,
-    photo: `https://avatars.bugsyaya.dev/150/${calendar.id}`,
+    link: `/calendars/${calendar?.id}`,
+    alt: `${calendar?.name?.toUpperCase()}`,
+    photo: `https://avatars.bugsyaya.dev/150/${calendar?.id}`,
   }
 }
 
-const toCalendars = (calendars: HasuraCalendar[]) => {
+export const toCalendars = (calendars: HasuraCalendar[]) => {
   return calendars?.map((calendar: HasuraCalendar) => toCalendar(calendar))
 }
 

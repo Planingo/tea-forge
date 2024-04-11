@@ -11,21 +11,29 @@ const getCompaniesQuerie = gql`
   }
 `
 
-export const useCompanies = () => {
-  const { data, ...result } = useQuery(getCompaniesQuerie)
-  const companies: Company = data?.company.map((company: HasuraCompany) => ({
+export const toCompany = (company: HasuraCompany): Company => {
+  return {
     id: company.id,
     name: company.name,
     tags: [],
     actions: {
-      downloadTitle: `Télécharger le calendrier pour ${company.name}`,
-      cloudTitle: `Envoyer le calendrier à ${company.name}`,
-      deleteTitle: `Supprimer l'étudtiant ${company.name}`,
+      downloadTitle: { id: `Télécharger le calendrier pour`, values: company.name },
+      cloudTitle: { id: `Envoyer le calendrier à`, values: company.name },
+      deleteTitle: { id: `Supprimer l'étudtiant`, values: company.name },
     },
     link: `/companies/${company.id}`,
     alt: company.name,
     photo: `https://avatars.bugsyaya.dev/150/${company.id}`,
-  }))
+  }
+}
+
+export const toCompanies = (companies: HasuraCompany[]): Company[] => {
+  return companies?.map((company: HasuraCompany) => toCompany(company))
+}
+
+export const useCompanies = () => {
+  const { data, ...result } = useQuery(getCompaniesQuerie)
+  const companies: Company[] = toCompanies(data?.company)
 
   return { companies, ...result }
 }

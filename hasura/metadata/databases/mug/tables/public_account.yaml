@@ -13,6 +13,13 @@ array_relationships:
         table:
           name: account_roles
           schema: public
+  - name: account_settings
+    using:
+      foreign_key_constraint_on:
+        column: account_id
+        table:
+          name: account_setting
+          schema: public
 insert_permissions:
   - role: auth
     permission:

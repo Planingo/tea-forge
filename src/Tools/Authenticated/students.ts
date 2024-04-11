@@ -6,6 +6,9 @@ import { Lesson as HasuraLesson } from "../../Types/Hasura/lesson.js"
 import { Module as HasuraModule } from "../../Types/Hasura/module.js"
 import { Student as HasuraStudent } from "../../Types/Hasura/student.js"
 import { Student } from "../../Types/student.js"
+import { toCalendars } from "./calendars.js"
+import { toCompany } from "./companies.js"
+import { toPathways } from "./pathways.js"
 
 const calendarFragment = gql`
   fragment calendarFragment on student {
@@ -36,21 +39,27 @@ const calendarFragment = gql`
 `
 
 const SEARCH_STUDENTS = gql`
-  query getAllStudents($searchText: String, $searchText2: String) {
+  query getAllStudents($searchText: String, $searchText2: String, $condition: student_bool_exp!) {
     student(
-      order_by: { user: { lastname: asc } }
       where: {
-        user: {
-          _or: [
-            { firstname: { _ilike: $searchText } }
-            { lastname: { _ilike: $searchText2 } }
-            { firstname: { _ilike: $searchText2 } }
-            { lastname: { _ilike: $searchText } }
-          ]
-        }
+        _and: [
+          {
+            user: {
+              _or: [
+                { firstname: { _ilike: $searchText } }
+                { lastname: { _ilike: $searchText2 } }
+                { firstname: { _ilike: $searchText2 } }
+                { lastname: { _ilike: $searchText } }
+              ]
+            }
+          }
+          $condition
+        ]
       }
+      order_by: { user: { lastname: asc } }
     ) {
       id
+      archived
       user {
         lastname
         firstname
@@ -67,31 +76,9 @@ const SEARCH_STUDENTS = gql`
           name
         }
       }
-      ...calendarFragment
-    }
-  }
-  ${calendarFragment}
-`
-
-const getStudentsQuerie = gql`
-  query students {
-    student(
-      order_by: { user: { lastname: asc } }
-      where: { archived: { _eq: false }, user: { archived: { _eq: false } } }
-    ) {
-      id
-      user {
-        lastname
-        firstname
+      student_companies {
         id
-        account {
-          id
-          email
-        }
-      }
-      student_pathways {
-        id
-        pathway {
+        company {
           id
           name
         }
@@ -106,6 +93,7 @@ const getStudentById = gql`
   query student_by_pk($id: uuid!) {
     student_by_pk(id: $id) {
       id
+      archived
       user {
         lastname
         firstname
@@ -118,6 +106,13 @@ const getStudentById = gql`
       student_pathways {
         id
         pathway {
+          id
+          name
+        }
+      }
+      student_companies {
+        id
+        company {
           id
           name
         }
@@ -135,8 +130,13 @@ const toStudent = (student: HasuraStudent): Student => {
     firstname: student?.user.firstname,
     lastname: student?.user.lastname?.toUpperCase(),
     email: student?.user.account?.email,
-    pathway: student?.student_pathways[0]?.pathway,
-    calendar: student?.student_calendars[0]?.calendar,
+    pathways: toPathways(
+      student?.student_pathways.map((student_pathway) => student_pathway.pathway)
+    ),
+    calendars: toCalendars(
+      student?.student_calendars.map((student_calendar) => student_calendar.calendar)
+    ),
+    archived: student?.archived,
     events: student?.student_calendars[0]?.calendar?.module_calendars.flatMap(
       ({ module }: { module: HasuraModule }) =>
         module.module_lessons.map(({ lesson }: { lesson: HasuraLesson }) => ({
@@ -147,17 +147,23 @@ const toStudent = (student: HasuraStudent): Student => {
           borderColor: generateColor(module.name),
         }))
     ),
+    companies: student?.student_companies?.map((student_company) =>
+      toCompany(student_company.company)
+    ),
     tags: [],
     actions: {
-      downloadTitle: `Télécharger le calendrier pour ${student?.user.lastname?.toUpperCase()} ${
-        student?.user.firstname
-      }`,
-      cloudTitle: `Envoyer le calendrier à ${student?.user.lastname?.toUpperCase()} ${
-        student?.user.firstname
-      }`,
-      deleteTitle: `Supprimer l'étudtiant ${student?.user.lastname?.toUpperCase()} ${
-        student?.user.firstname
-      }`,
+      downloadTitle: {
+        id: "download.calendar.student",
+        values: `${student?.user.lastname?.toUpperCase()} ${student?.user.firstname}`,
+      },
+      cloudTitle: {
+        id: "send.calendar.student",
+        values: `${student?.user.lastname?.toUpperCase()} ${student?.user.firstname}`,
+      },
+      deleteTitle: {
+        id: "archived.student",
+        values: `${student?.user.lastname?.toUpperCase()} ${student?.user.firstname}`,
+      },
     },
     link: `/students/${student?.user.id}`,
     alt: `${student?.user.lastname?.toUpperCase()} ${student?.user.firstname}`,
@@ -165,37 +171,27 @@ const toStudent = (student: HasuraStudent): Student => {
   }
 }
 
-const toStudents = (students: HasuraStudent[]): Student[] => {
+const toStudents = (students: HasuraStudent[]) => {
   return students?.map((student: HasuraStudent) => toStudent(student))
-}
-
-export const useStudents = () => {
-  const { data, ...result } = useQuery(getStudentsQuerie)
-
-  const students = toStudents(data?.student)
-  return { students, ...result }
 }
 
 export const useAddOneStudent = () => {
   const [addOneStudent, result] = useMutation(
     gql`
-      mutation addOneStudent($firstname: String, $lastname: String, $email: String) {
-        insert_student_one(
-          object: {
-            user: {
-              data: {
-                firstname: $firstname
-                lastname: $lastname
-                account: { data: { email: $email } }
-              }
-            }
-          }
-        ) {
+      mutation addOneStudent($condition: student_insert_input!) {
+        insert_student_one(object: $condition) {
           id
           user {
             id
             account {
               id
+            }
+          }
+          student_pathways {
+            id
+            pathway {
+              id
+              name
             }
           }
         }
@@ -204,41 +200,135 @@ export const useAddOneStudent = () => {
     {
       refetchQueries: [
         {
-          query: getStudentsQuerie,
+          query: SEARCH_STUDENTS,
+          variables: { condition: { archived: { _eq: false } } },
         },
       ],
     }
   )
 
   return [
-    (student: HasuraStudent) => {
-      return addOneStudent({ variables: student })
+    (student: any) => {
+      return addOneStudent({
+        variables: {
+          condition: {
+            user: {
+              data: {
+                firstname: student.firstname,
+                lastname: student.lastname,
+                account: { data: { email: student.email } },
+              },
+            },
+            student_pathways: { data: { pathway_id: student.pathway_id } },
+            student_calendars: student.calendar
+              ? { data: { calendar_id: student.calendar } }
+              : undefined,
+            student_companies: student.company
+              ? { data: { company_id: student.company } }
+              : undefined,
+          },
+        },
+      })
     },
     result,
   ]
 }
 
 export const useSearchStudents = () => {
-  const [searchQuery, setSearchQuery] = useState({
-    variables: { searchText: "%%", searchText2: "" },
+  const [searchQuery, setSearchQuery] = useState<any>({
+    variables: {
+      searchText: "%%",
+      searchText2: "",
+      condition: { archived: { _eq: false } },
+    },
   })
 
   const { data, ...result } = useQuery(SEARCH_STUDENTS, searchQuery)
 
+  const filterByPathway = (id?: string) => {
+    setSearchQuery({
+      variables: {
+        ...searchQuery.variables,
+        condition: {
+          ...searchQuery.variables.condition,
+          student_pathways: id ? { pathway: { id: { _eq: id } } } : undefined,
+        },
+      },
+    })
+  }
+
+  const filterByCalendar = (id?: string) => {
+    setSearchQuery({
+      variables: {
+        ...searchQuery.variables,
+        condition: {
+          ...searchQuery.variables.condition,
+          student_calendars: id ? { calendar: { id: { _eq: id } } } : undefined,
+        },
+      },
+    })
+  }
+
+  const filterByCompany = (id?: string) => {
+    setSearchQuery({
+      variables: {
+        ...searchQuery.variables,
+        condition: {
+          ...searchQuery.variables.condition,
+          student_companies: id ? { company: { id: { _eq: id } } } : undefined,
+        },
+      },
+    })
+  }
+
+  const filterByArchived = (archived?: boolean) => {
+    setSearchQuery({
+      variables: {
+        ...searchQuery.variables,
+        condition: {
+          ...searchQuery.variables.condition,
+          archived: { _eq: archived === null ? undefined : archived },
+        },
+      },
+    })
+  }
+
   const search = useDebouncedCallback((searchText: string) => {
     const searchsTmp = searchText.split(" ").map((st: string) => `%${st}%`)
+
     if (searchText)
       setSearchQuery({
         variables: {
+          ...searchQuery.variables,
           searchText: searchsTmp[0],
           searchText2: searchsTmp[1] || "",
         },
       })
-    else setSearchQuery({ variables: { searchText: "%%", searchText2: "" } })
+    else
+      setSearchQuery({
+        variables: {
+          ...searchQuery.variables,
+          searchText: "%%",
+          searchText2: "",
+        },
+      })
   }, 500)
 
-  const students = toStudents(data?.student)
-  return { search, students, ...result }
+  const students = toStudents(data?.student)?.filter(
+    (student) =>
+      student?.archived !== null ??
+      student?.archived === searchQuery?.variables?.condition?.archived?._eq
+  )
+
+  return {
+    search,
+    students,
+    filterByPathway,
+    filterByArchived,
+    filterByCalendar,
+    filterByCompany,
+    ...result,
+  }
 }
 
 export const useGetStudentById = (id: string) => {
@@ -262,4 +352,33 @@ export const useCountStudent = () => {
   `)
 
   return { count: data?.student_aggregate.aggregate.count, ...result }
+}
+
+export const useArchivedById = () => {
+  const [archivedOneStudent, result] = useMutation(
+    gql`
+      mutation archivedOneStudent($id: uuid!) {
+        update_student_by_pk(pk_columns: { id: $id }, _set: { archived: true }) {
+          id
+          archived
+          updated_at
+          created_at
+        }
+      }
+    `,
+    {
+      refetchQueries: [
+        {
+          query: SEARCH_STUDENTS,
+        },
+      ],
+    }
+  )
+
+  return [
+    (id: string) => {
+      return archivedOneStudent({ variables: { id: id } })
+    },
+    result,
+  ] as const
 }

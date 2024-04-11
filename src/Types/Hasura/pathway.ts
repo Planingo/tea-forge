@@ -3,7 +3,7 @@ import { Student_Pathways } from "./student_pathways.js"
 
 export type Pathway = {
   id: string
-  archived?: Boolean
+  archived?: boolean
   created_at?: Date
   updated_at: Date
   name: string

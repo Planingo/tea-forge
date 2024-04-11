@@ -1,0 +1,10 @@
+table:
+  name: setting_week
+  schema: public
+object_relationships:
+  - name: setting
+    using:
+      foreign_key_constraint_on: setting_id
+  - name: week
+    using:
+      foreign_key_constraint_on: week_id

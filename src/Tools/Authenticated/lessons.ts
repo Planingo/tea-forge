@@ -91,9 +91,18 @@ const toLesson = (lesson: HasuraLesson): Lesson => {
     ],
     tags: [],
     actions: {
-      downloadTitle: `Télécharger le calendrier pour ${lesson?.name.toUpperCase()}`,
-      cloudTitle: `Envoyer le calendrier à ${lesson?.name.toUpperCase()}`,
-      deleteTitle: `Supprimer l'étudtiant ${lesson?.name.toUpperCase()}`,
+      downloadTitle: {
+        id: "Télécharger le calendrier pour",
+        values: `${lesson?.name.toUpperCase()}`,
+      },
+      cloudTitle: {
+        id: "Envoyer le calendrier",
+        values: `${lesson?.name.toUpperCase()}`,
+      },
+      deleteTitle: {
+        id: "Archiver le cours",
+        values: `${lesson?.name.toUpperCase()}`,
+      },
     },
     link: `/lessons/${lesson?.id}`,
     alt: `${lesson?.name.toUpperCase()}`,

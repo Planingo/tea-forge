@@ -50,15 +50,18 @@ const toProfessor = (professor: HasuraProfessor | undefined | null): Professor |
     email: professor.user.account?.email,
     tags: [],
     actions: {
-      downloadTitle: `Télécharger le calendrier pour ${professor.user.lastname?.toUpperCase()} ${
-        professor.user.firstname
-      }`,
-      cloudTitle: `Envoyer le calendrier à ${professor.user.lastname?.toUpperCase()} ${
-        professor.user.firstname
-      }`,
-      deleteTitle: `Supprimer l'étudtiant ${professor.user.lastname?.toUpperCase()} ${
-        professor.user.firstname
-      }`,
+      downloadTitle: {
+        id: "Télécharger le calendrier pour",
+        values: `${professor.user.lastname?.toUpperCase()} ${professor.user.firstname}`,
+      },
+      cloudTitle: {
+        id: "Envoyer le calendrier",
+        values: `${professor.user.lastname?.toUpperCase()} ${professor.user.firstname}`,
+      },
+      deleteTitle: {
+        id: "Archiver le professor",
+        values: `${professor.user.lastname?.toUpperCase()} ${professor.user.firstname}`,
+      },
     },
     link: `/professors/${professor.user.id}`,
     alt: `${professor.user.lastname?.toUpperCase()} ${professor.user.firstname}`,

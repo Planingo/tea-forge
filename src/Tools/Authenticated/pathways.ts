@@ -11,21 +11,38 @@ const getPathwaysQuerie = gql`
   }
 `
 
-export const usePathways_tea = () => {
-  const { data, ...result } = useQuery(getPathwaysQuerie)
-  const pathways: Pathway = data?.pathway.map((pathway: HasuraPathway) => ({
-    id: pathway.id,
-    name: pathway.name,
+export const toPathways = (pathways: HasuraPathway[]): Pathway[] => {
+  return pathways?.map((pathway: HasuraPathway) => toPathway(pathway))
+}
+
+export const toPathway = (pathway: HasuraPathway): Pathway => {
+  return {
+    id: pathway?.id,
+    name: pathway?.name,
     tags: [],
     actions: {
-      downloadTitle: `Télécharger le calendrier pour ${pathway.name}`,
-      cloudTitle: `Envoyer le calendrier à ${pathway.name}`,
-      deleteTitle: `Supprimer l'étudtiant ${pathway.name}`,
+      downloadTitle: {
+        id: "Télécharger le calendrier pour",
+        values: `${pathway?.name}`,
+      },
+      cloudTitle: {
+        id: "Envoyer le calendrier",
+        values: `${pathway?.name}`,
+      },
+      deleteTitle: {
+        id: "Archiver la formation",
+        values: `${pathway?.name}`,
+      },
     },
-    link: `/pathways/${pathway.id}`,
-    alt: pathway.name,
-    photo: `https://avatars.bugsyaya.dev/150/${pathway.id}`,
-  }))
+    link: `/pathways/${pathway?.id}`,
+    alt: pathway?.name,
+    photo: `https://avatars.bugsyaya.dev/150/${pathway?.id}`,
+  }
+}
+
+export const usePathways_tea = () => {
+  const { data, ...result } = useQuery(getPathwaysQuerie)
+  const pathways: Pathway[] = toPathways(data?.pathway)
 
   return { pathways, ...result }
 }
