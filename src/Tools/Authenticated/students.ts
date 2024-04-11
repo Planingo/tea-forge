@@ -198,12 +198,7 @@ export const useAddOneStudent = () => {
       }
     `,
     {
-      refetchQueries: [
-        {
-          query: SEARCH_STUDENTS,
-          variables: { condition: { archived: { _eq: false } } },
-        },
-      ],
+      refetchQueries: ["getAllStudents"],
     }
   )
 
