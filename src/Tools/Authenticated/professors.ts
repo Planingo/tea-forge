@@ -1,4 +1,6 @@
 import { gql, useMutation, useQuery } from "@apollo/client"
+import { useState } from "react"
+import { useDebouncedCallback } from "use-debounce"
 import { Professor as HasuraProfessor } from "../../Types/Hasura/professor.js"
 import { Professor } from "../../Types/professor.js"
 
@@ -39,6 +41,45 @@ const getProfessorById = gql`
   }
 `
 
+const SEARCH_PROFESSORS = gql`
+  query getAllProfessors(
+    $searchText: String
+    $searchText2: String
+    $condition: professor_bool_exp!
+  ) {
+    professor(
+      where: {
+        _and: [
+          {
+            user: {
+              _or: [
+                { firstname: { _ilike: $searchText } }
+                { lastname: { _ilike: $searchText2 } }
+                { firstname: { _ilike: $searchText2 } }
+                { lastname: { _ilike: $searchText } }
+              ]
+            }
+          }
+          $condition
+        ]
+      }
+      order_by: { user: { lastname: asc } }
+    ) {
+      id
+      archived
+      user {
+        lastname
+        firstname
+        id
+        account {
+          id
+          email
+        }
+      }
+    }
+  }
+`
+
 const toProfessor = (professor: HasuraProfessor | undefined | null): Professor | null => {
   if (!professor) return null
 
@@ -49,17 +90,18 @@ const toProfessor = (professor: HasuraProfessor | undefined | null): Professor |
     lastname: professor.user.lastname?.toUpperCase(),
     email: professor.user.account?.email,
     tags: [],
+    archived: professor?.archived,
     actions: {
       downloadTitle: {
-        id: "Télécharger le calendrier pour",
+        id: "download.calendar.professor",
         values: `${professor.user.lastname?.toUpperCase()} ${professor.user.firstname}`,
       },
       cloudTitle: {
-        id: "Envoyer le calendrier",
+        id: "send.calendar.professor",
         values: `${professor.user.lastname?.toUpperCase()} ${professor.user.firstname}`,
       },
       deleteTitle: {
-        id: "Archiver le professor",
+        id: "archived.professor",
         values: `${professor.user.lastname?.toUpperCase()} ${professor.user.firstname}`,
       },
     },
@@ -71,6 +113,63 @@ const toProfessor = (professor: HasuraProfessor | undefined | null): Professor |
 
 const toProfessors = (professors: HasuraProfessor[]) => {
   return professors?.map((professor: HasuraProfessor) => toProfessor(professor))
+}
+export const useSearchProfessors = () => {
+  const [searchQuery, setSearchQuery] = useState<any>({
+    variables: {
+      searchText: "%%",
+      searchText2: "",
+      condition: { archived: { _eq: false } },
+    },
+  })
+
+  const { data, ...result } = useQuery(SEARCH_PROFESSORS, searchQuery)
+
+  const onSearch = useDebouncedCallback((searchText: string) => {
+    const searchsTmp = searchText.split(" ").map((st: string) => `%${st}%`)
+
+    if (searchText)
+      setSearchQuery({
+        variables: {
+          ...searchQuery.variables,
+          searchText: searchsTmp[0],
+          searchText2: searchsTmp[1] || "",
+        },
+      })
+    else
+      setSearchQuery({
+        variables: {
+          ...searchQuery.variables,
+          searchText: "%%",
+          searchText2: "",
+        },
+      })
+  }, 500)
+
+  const filterByArchived = (archived: string | boolean) => {
+    setSearchQuery({
+      variables: {
+        ...searchQuery.variables,
+        condition: {
+          ...searchQuery.variables.condition,
+          archived: { _eq: archived === "all" ? undefined : archived },
+        },
+      },
+    })
+  }
+
+  const professors = toProfessors(data?.professor)?.filter((professor) =>
+    searchQuery?.variables?.condition?.archived?._eq !== undefined
+      ? professor?.archived === searchQuery?.variables?.condition?.archived?._eq
+      : professor
+  )
+
+  return {
+    onSearch,
+    professors,
+    filterByArchived,
+    ...result,
+  }
 }
 
 export const useProfessors = () => {
@@ -91,18 +190,8 @@ export const useGetProfessorById = (id: string) => {
 export const useAddOneProfessor = () => {
   const [addOneProfessor, result] = useMutation(
     gql`
-      mutation addOneProfessor($firstname: String, $lastname: String, $email: String) {
-        insert_professor_one(
-          object: {
-            user: {
-              data: {
-                firstname: $firstname
-                lastname: $lastname
-                account: { data: { email: $email } }
-              }
-            }
-          }
-        ) {
+      mutation addOneProfessor($condition: professor_insert_input!) {
+        insert_professor_one(object: $condition) {
           id
           user {
             id
@@ -114,18 +203,56 @@ export const useAddOneProfessor = () => {
       }
     `,
     {
+      refetchQueries: ["getAllProfessors"],
+    }
+  )
+
+  return [
+    (professor: any) => {
+      console.log(professor)
+      return addOneProfessor({
+        variables: {
+          condition: {
+            user: {
+              data: {
+                firstname: professor.firstname,
+                lastname: professor.lastname,
+                account: { data: { email: professor.email } },
+              },
+            },
+          },
+        },
+      })
+    },
+    result,
+  ]
+}
+
+export const useArchivedById = () => {
+  const [archivedOneProfessor, result] = useMutation(
+    gql`
+      mutation archivedOneProfessor($id: uuid!) {
+        update_professor_by_pk(pk_columns: { id: $id }, _set: { archived: true }) {
+          id
+          archived
+          updated_at
+          created_at
+        }
+      }
+    `,
+    {
       refetchQueries: [
         {
-          query: getProfessorsQuerie,
+          query: SEARCH_PROFESSORS,
         },
       ],
     }
   )
 
   return [
-    (professor: HasuraProfessor) => {
-      return addOneProfessor({ variables: professor })
+    (id: string) => {
+      return archivedOneProfessor({ variables: { id: id } })
     },
     result,
-  ]
+  ] as const
 }

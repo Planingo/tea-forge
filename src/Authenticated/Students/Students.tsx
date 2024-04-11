@@ -40,7 +40,6 @@ export const Students = () => {
   const { companies } = useCompanies()
   const { calendars } = useCalendars()
   const { pathways } = usePathways_tea()
-  console.log(students)
   const [addOneStudent, loading] = useAddOneStudent()
   const [archivedOneStudent] = useArchivedById()
   const [isGrid, setIsGrid] = useState(false)
