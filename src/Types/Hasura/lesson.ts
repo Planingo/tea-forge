@@ -3,7 +3,7 @@ import { Module_Lesson } from "./module_lesson.js"
 
 export type Lesson = {
   id: string
-  archived?: Boolean
+  archived?: boolean
   created_at?: Date
   updated_at: Date
   name: string

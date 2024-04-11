@@ -13,6 +13,13 @@ array_relationships:
         table:
           name: student_calendar
           schema: public
+  - name: student_companies
+    using:
+      foreign_key_constraint_on:
+        column: student_id
+        table:
+          name: student_company
+          schema: public
   - name: student_pathways
     using:
       foreign_key_constraint_on:

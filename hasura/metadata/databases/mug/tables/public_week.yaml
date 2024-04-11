@@ -1,11 +1,11 @@
 table:
-  name: company
+  name: week
   schema: public
 array_relationships:
-  - name: student_companies
+  - name: setting_weeks
     using:
       foreign_key_constraint_on:
-        column: company_id
+        column: week_id
         table:
-          name: student_company
+          name: setting_week
           schema: public

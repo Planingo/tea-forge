@@ -29,9 +29,18 @@ export const useModules_tea = () => {
     ),
     tags: [],
     actions: {
-      downloadTitle: `Télécharger le calendrier pour ${module.name}`,
-      cloudTitle: `Envoyer le calendrier à ${module.name}`,
-      deleteTitle: `Supprimer le module ${module.name}`,
+      downloadTitle: {
+        id: "Télécharger le calendrier pour",
+        values: `${module.name}`,
+      },
+      cloudTitle: {
+        id: "Envoyer le calendrier",
+        values: `${module.name}`,
+      },
+      deleteTitle: {
+        id: "Archiver le module",
+        values: `${module.name}`,
+      },
     },
     link: `/modules/${module.id}`,
     alt: module.name,

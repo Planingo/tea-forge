@@ -20,9 +20,18 @@ export const useRooms = () => {
     max_seats: room.max_seats,
     tags: [],
     actions: {
-      downloadTitle: `Télécharger le calendrier pour ${room.name.toUpperCase()}`,
-      cloudTitle: `Envoyer le calendrier à ${room.name.toUpperCase()}`,
-      deleteTitle: `Supprimer l'étudtiant ${room.name.toUpperCase()}`,
+      downloadTitle: {
+        id: "Télécharger le calendrier pour",
+        values: `${room.name.toUpperCase()}`,
+      },
+      cloudTitle: {
+        id: "Envoyer le calendrier",
+        values: `${room.name.toUpperCase()}`,
+      },
+      deleteTitle: {
+        id: "Archiver la salle",
+        values: `${room.name.toUpperCase()}`,
+      },
     },
     link: `/rooms/${room.id}`,
     alt: `${room.name.toUpperCase()}`,

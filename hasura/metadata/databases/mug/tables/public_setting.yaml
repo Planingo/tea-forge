@@ -1,0 +1,25 @@
+table:
+  name: setting
+  schema: public
+array_relationships:
+  - name: account_settings
+    using:
+      foreign_key_constraint_on:
+        column: setting_id
+        table:
+          name: account_setting
+          schema: public
+  - name: setting_navigations
+    using:
+      foreign_key_constraint_on:
+        column: setting_id
+        table:
+          name: setting_navigation
+          schema: public
+  - name: setting_weeks
+    using:
+      foreign_key_constraint_on:
+        column: setting_id
+        table:
+          name: setting_week
+          schema: public

@@ -1,10 +1,11 @@
 import { ApolloProvider } from "@apollo/client"
 import { IntlProvider, ThemeProvider } from "@pixel-brew/bubble-craft"
-import { createContext } from "react"
+import { createContext, useEffect } from "react"
 import {
   Route as ReactRoute,
   Routes as ReactRoutes,
   BrowserRouter as Router,
+  useLocation,
 } from "react-router-dom"
 import useLocalStorageState from "use-local-storage-state"
 import { Login } from "./Account/Login.js"
@@ -35,6 +36,17 @@ export const AuthentificationContexte = createContext<
   | undefined
 >(undefined)
 
+const titles: Record<string, string> = {
+  "/students": "Tea Forge - Students",
+  "/professors": "Tea Forge - Professors",
+  "/calendars": "Tea Forge - Calendars",
+  "/lessons": "Tea Forge - Lessons",
+  "/modules": "Tea Forge - Modules",
+  "/rooms": "Tea Forge - Rooms",
+  "/companies": "Tea Forge - Companies",
+  "/settings": "Tea Forge - Settings",
+}
+
 function App() {
   const [token, setToken] = useLocalStorageState<string | undefined>("token", undefined)
   return (
@@ -53,6 +65,7 @@ function App() {
 function Routes() {
   return (
     <Router>
+      <SyncTitle />
       <ReactRoutes>
         <ReactRoute path="/login" element={<Login />} />
         <ReactRoute path="/signup" element={<Signup />} />
@@ -75,6 +88,14 @@ function Routes() {
       </ReactRoutes>
     </Router>
   )
+}
+
+function SyncTitle() {
+  const location = useLocation()
+  useEffect(() => {
+    document.title = titles[location.pathname] || "Tea Forge"
+  }, [location])
+  return null
 }
 
 export default App

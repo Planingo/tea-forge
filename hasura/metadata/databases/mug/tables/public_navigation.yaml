@@ -1,11 +1,11 @@
 table:
-  name: company
+  name: navigation
   schema: public
 array_relationships:
-  - name: student_companies
+  - name: setting_navigations
     using:
       foreign_key_constraint_on:
-        column: company_id
+        column: navigation_id
         table:
-          name: student_company
+          name: setting_navigation
           schema: public

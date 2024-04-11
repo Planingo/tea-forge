@@ -4,7 +4,7 @@ import { Pathway_Module } from "./pathway_module.js"
 
 export type Module = {
   id: string
-  archived?: Boolean
+  archived?: boolean
   created_at?: Date
   updated_at: Date
   name: string

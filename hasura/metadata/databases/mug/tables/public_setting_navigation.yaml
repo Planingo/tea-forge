@@ -1,0 +1,10 @@
+table:
+  name: setting_navigation
+  schema: public
+object_relationships:
+  - name: navigation
+    using:
+      foreign_key_constraint_on: navigation_id
+  - name: setting
+    using:
+      foreign_key_constraint_on: setting_id
