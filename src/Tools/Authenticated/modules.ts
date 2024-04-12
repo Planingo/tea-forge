@@ -19,9 +19,8 @@ const getModulesQuerie = gql`
   }
 `
 
-export const useModules_tea = () => {
-  const { data, ...result } = useQuery(getModulesQuerie)
-  const modules: Module[] = data?.module.map((module: HasuraModule) => ({
+export const toModule = (module: HasuraModule): Module => {
+  return {
     id: module.id,
     name: module.name,
     pathways: module.pathway_modules?.map(
@@ -45,7 +44,16 @@ export const useModules_tea = () => {
     link: `/modules/${module.id}`,
     alt: module.name,
     photo: `https://avatars.bugsyaya.dev/150/${module.id}`,
-  }))
+  }
+}
+
+export const toModules = (modules: HasuraModule[]): Module[] => {
+  return modules?.map((module) => toModule(module))
+}
+
+export const useModules_tea = () => {
+  const { data, ...result } = useQuery(getModulesQuerie)
+  const modules: Module[] = toModules(data?.module)
 
   return { modules, ...result }
 }
