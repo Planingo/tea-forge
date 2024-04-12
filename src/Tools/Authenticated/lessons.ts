@@ -1,7 +1,11 @@
 import { gql, useMutation, useQuery } from "@apollo/client"
+import { useState } from "react"
+import { useDebouncedCallback } from "use-debounce"
 import { generateColor } from "../../../helper/generate_colors.js"
 import { Lesson as HasuraLesson } from "../../Types/Hasura/lesson.js"
 import { Lesson } from "../../Types/lesson.js"
+import { toModules } from "./modules.js"
+import { toPathways } from "./pathways.js"
 
 const calendarFragment = gql`
   fragment calendarFragment on lesson {
@@ -14,6 +18,34 @@ const calendarFragment = gql`
       }
     }
   }
+`
+
+const SEARCH_LESSONS = gql`
+  query getAllLessons($condition: lesson_bool_exp!) {
+    lesson(where: { _and: [$condition] }, order_by: { name: asc }) {
+      end_date
+      start_date
+      id
+      archived
+      name
+      module_lessons {
+        id
+        module {
+          id
+          name
+          pathway_modules {
+            id
+            pathway {
+              id
+              name
+            }
+          }
+        }
+      }
+      ...calendarFragment
+    }
+  }
+  ${calendarFragment}
 `
 
 const getLessonsQuerie = gql`
@@ -78,8 +110,13 @@ const toLesson = (lesson: HasuraLesson): Lesson => {
     name: `${lesson?.name.toUpperCase()}`,
     start_date: `${start.toLocaleTimeString()} ${start.toLocaleDateString()}`,
     end_date: `${end.toLocaleTimeString()} ${end.toLocaleDateString()}`,
-    module: lesson?.module_lessons[0].module,
-    pathway: lesson?.module_lessons[0].module?.pathway_modules[0]?.pathway,
+    modules: toModules(lesson?.module_lessons?.map((module_lesson) => module_lesson.module)),
+    archived: lesson?.archived,
+    pathways: toPathways(
+      lesson?.module_lessons.flatMap((module_lesson) =>
+        module_lesson.module?.pathway_modules.map((pathway_modules) => pathway_modules.pathway)
+      )
+    ),
     events: [
       {
         title: lesson?.name,
@@ -92,15 +129,15 @@ const toLesson = (lesson: HasuraLesson): Lesson => {
     tags: [],
     actions: {
       downloadTitle: {
-        id: "Télécharger le calendrier pour",
+        id: "download.calendar.lesson",
         values: `${lesson?.name.toUpperCase()}`,
       },
       cloudTitle: {
-        id: "Envoyer le calendrier",
+        id: "send.calendar.lesson",
         values: `${lesson?.name.toUpperCase()}`,
       },
       deleteTitle: {
-        id: "Archiver le cours",
+        id: "archived.lesson",
         values: `${lesson?.name.toUpperCase()}`,
       },
     },
@@ -112,6 +149,81 @@ const toLesson = (lesson: HasuraLesson): Lesson => {
 
 const toLessons = (lessons: HasuraLesson[]): Lesson[] => {
   return lessons?.map((lesson: HasuraLesson) => toLesson(lesson))
+}
+
+export const useSearchLessons = () => {
+  const [searchQuery, setSearchQuery] = useState<any>({
+    variables: {
+      condition: { archived: { _eq: false } },
+    },
+  })
+
+  const { data, ...result } = useQuery(SEARCH_LESSONS, searchQuery)
+
+  const filterByArchived = (archived: string | boolean) => {
+    setSearchQuery({
+      variables: {
+        condition: {
+          ...searchQuery.variables.condition,
+          archived: { _eq: archived === "all" ? undefined : archived },
+        },
+      },
+    })
+  }
+
+  const filterByPathway = (id?: string) => {
+    setSearchQuery({
+      variables: {
+        ...searchQuery.variables,
+        condition: {
+          ...searchQuery.variables.condition,
+          module_lessons: id
+            ? { module: { pathway_modules: { pathway: { id: { _eq: id } } } } }
+            : undefined,
+        },
+      },
+    })
+  }
+
+  const filterByModule = (id?: string) => {
+    setSearchQuery({
+      variables: {
+        ...searchQuery.variables,
+        condition: {
+          ...searchQuery.variables.condition,
+          module_lessons: id ? { module: { id: { _eq: id } } } : undefined,
+        },
+      },
+    })
+  }
+
+  const onSearch = useDebouncedCallback((searchText?: string) => {
+    setSearchQuery({
+      variables: {
+        condition: {
+          ...searchQuery.variables.condition,
+          name: searchText ? { _ilike: `%${searchText}%` } : undefined,
+        },
+      },
+    })
+  }, 500)
+
+  const lessons = toLessons(data?.lesson)?.filter((lesson) =>
+    searchQuery?.variables?.condition?.archived?._eq !== undefined
+      ? lesson?.archived === searchQuery?.variables?.condition?.archived?._eq
+      : lesson
+  )
+
+  console.log(lessons)
+
+  return {
+    onSearch,
+    lessons,
+    filterByArchived,
+    filterByPathway,
+    filterByModule,
+    ...result,
+  }
 }
 
 export const useGetLessonById = (id: string) => {
@@ -151,11 +263,7 @@ export const useAddOneLesson = () => {
       }
     `,
     {
-      refetchQueries: [
-        {
-          query: getLessonsQuerie,
-        },
-      ],
+      refetchQueries: ["getAllLessons"],
     }
   )
 
@@ -165,4 +273,30 @@ export const useAddOneLesson = () => {
     },
     result,
   ]
+}
+
+export const useArchivedById = () => {
+  const [archivedOneLesson, result] = useMutation(
+    gql`
+      mutation archivedOneLesson($id: uuid!) {
+        update_lesson_by_pk(pk_columns: { id: $id }, _set: { archived: true }) {
+          end_date
+          start_date
+          id
+          archived
+          name
+        }
+      }
+    `,
+    {
+      refetchQueries: ["getAllLessons"],
+    }
+  )
+
+  return [
+    (id: string) => {
+      return archivedOneLesson({ variables: { id: id } })
+    },
+    result,
+  ] as const
 }

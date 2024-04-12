@@ -23,6 +23,7 @@ import {
 import { Actions as ActionsType } from "../../Types/actions.js"
 import { Calendar } from "../../Types/calendar.js"
 import { Company } from "../../Types/company.js"
+import { Pathway } from "../../Types/pathway.js"
 import { Student } from "../../Types/student.js"
 import { Layout } from "../Layout/Layout.js"
 import "./students.css"
@@ -174,7 +175,7 @@ export const Students = () => {
               key: "pathways",
               width: "10em",
               haveLabel: true,
-              render: (pathways: Company[]) =>
+              render: (pathways: Pathway[]) =>
                 pathways?.map((pathway) => (
                   <a href={pathway?.link} key={pathway?.id}>
                     {pathway?.name}

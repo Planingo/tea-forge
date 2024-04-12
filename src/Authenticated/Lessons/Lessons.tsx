@@ -1,15 +1,21 @@
 import {
   Actions,
+  ArchivedOutlined,
+  Filters,
   Gallery,
   GalleryList,
   Header,
   LessonForm,
-  Spin,
   TagOutlined,
+  Tooltip,
 } from "@pixel-brew/bubble-craft"
 import { useState } from "react"
 import { uniqBy } from "../../../helper/uniq.js"
-import { useAddOneLesson, useLessons } from "../../Tools/Authenticated/lessons.js"
+import {
+  useAddOneLesson,
+  useArchivedById,
+  useSearchLessons,
+} from "../../Tools/Authenticated/lessons.js"
 import { useModules_tea } from "../../Tools/Authenticated/modules.js"
 import { Actions as ActionsType } from "../../Types/actions.js"
 import { Lesson } from "../../Types/lesson.js"
@@ -18,10 +24,15 @@ import { Pathway } from "../../Types/pathway.js"
 import { Layout } from "../Layout/Layout.js"
 
 export const Lessons = () => {
-  const onSearch = (e: string) => {
-    console.log
-  }
-  const { lessons, loading: loadingLessons } = useLessons()
+  const {
+    onSearch,
+    lessons,
+    loading: loadingLessons,
+    filterByArchived,
+    filterByPathway,
+    filterByModule,
+  } = useSearchLessons()
+  const [archivedOneLesson] = useArchivedById()
   const { modules, loading: loadingModules } = useModules_tea()
   const [addOneLesson, loading] = useAddOneLesson()
   const [isGrid, setIsGrid] = useState(false)
@@ -29,7 +40,7 @@ export const Lessons = () => {
   return (
     <Layout>
       <Header
-        placeholder="Rechercher"
+        placeholder="send"
         onSearch={onSearch}
         isRefinementList={true}
         refinementList={{
@@ -50,75 +61,117 @@ export const Lessons = () => {
           setIsGrid: () => setIsGrid(!isGrid),
           formId: "lesson-form",
         }}
-        refinementDetails={{
-          FirstActionIcon: TagOutlined,
-          firstActionText: "app.add.lesson",
-          FirstForm: <LessonForm onSubmit={addOneLesson} />,
-          firstActioning: loading,
-          onFirstAction: addOneLesson,
-          isGrid: isGrid,
-          setIsGrid: () => setIsGrid(isGrid),
-          formId: "lesson-form",
-          SecondActionIcon: console.log,
-          SecondForm: <></>,
-          onSecondAction: console.log,
-          secondActionText: "app.edit.lesson",
-          secondActioning: console.log,
-        }}
       />
-      {loadingLessons ? (
-        <Spin />
-      ) : isGrid ? (
-        <Gallery datas={lessons} name="lessons" />
+      <Filters
+        selects={[
+          {
+            placeholder: "pathways",
+            options:
+              lessons?.map((lesson) => lesson?.pathways) &&
+              uniqBy(
+                lessons
+                  ?.map((lesson) => lesson?.pathways)
+                  .flatMap((pathways) =>
+                    pathways.map((pathway) => ({ value: pathway?.id, label: pathway?.name }))
+                  ),
+                ({ value }) => value
+              ),
+            allowClear: true,
+            onChange: (id?: string) => filterByPathway(id),
+          },
+          {
+            placeholder: "modules",
+            options:
+              lessons?.map((lesson) => lesson?.modules) &&
+              uniqBy(
+                lessons
+                  ?.map((lesson) => lesson?.modules)
+                  .flatMap((module) =>
+                    module.map((module) => ({ value: module?.id, label: module?.name }))
+                  ),
+                ({ value }) => value
+              ),
+            allowClear: true,
+            onChange: (id?: string) => filterByModule(id),
+          },
+          {
+            placeholder: "archived",
+            defaultValue: "non archivé",
+            options: [
+              { value: "all", label: "tous" },
+              { value: true, label: "archivé" },
+              { value: false, label: "non archivé" },
+            ],
+            allowClear: false,
+            onChange: (isArchived: string | boolean) => filterByArchived(isArchived),
+          },
+        ]}
+        count={{ id: "lesson", count: lessons?.length }}
+      />
+      {isGrid ? (
+        <Gallery datas={lessons} loading={loadingLessons} name="lessons" />
       ) : (
         <GalleryList
           columns={[
             {
+              key: "archived",
+              width: "2em",
+              render: (archived: boolean) => (
+                <>
+                  {archived ? (
+                    <Tooltip title="archived" placement="bottom">
+                      <ArchivedOutlined className="cloud" />
+                    </Tooltip>
+                  ) : (
+                    <></>
+                  )}
+                </>
+              ),
+            },
+            {
               key: "photo",
+              width: "5em",
+              haveLabel: true,
               render: (photo: string) => <img src={photo} alt="placeholder" />,
             },
             {
               key: "name",
+              haveLabel: true,
               sorter: (a: Lesson, b: Lesson) => a.name.localeCompare(b.name),
             },
-            { key: "start_date" },
-            { key: "end_date" },
+            { key: "start_date", haveLabel: true },
+            { key: "end_date", haveLabel: true },
             {
-              key: "module",
-              render: (module: Module) => <a href={`/modules/${module?.id}`}>{module?.name}</a>,
-              filters: uniqBy(
-                lessons?.map((lesson: Lesson) => ({
-                  value: lesson.module.id,
-                  text: lesson.module.name,
-                })),
-                ({ value }: { value: string }) => value
-              ),
-              onFilter: (value: string, record: Lesson) => record.module.id === value,
-              sorter: (a: Lesson, b: Lesson) => a.name.localeCompare(b.name),
+              key: "modules",
+              haveLabel: true,
+              render: (modules: Module[]) =>
+                modules?.map((module) => (
+                  <a href={module?.link} key={module?.id}>
+                    {module?.name}
+                  </a>
+                )),
             },
             {
-              key: "pathway",
-              render: (pathway: Pathway) => (
-                <a href={`/pathways/${pathway?.id}`}>{pathway?.name}</a>
-              ),
-              filters: uniqBy(
-                lessons?.map((lesson: Lesson) => ({
-                  value: lesson.pathway?.id,
-                  text: lesson.pathway?.name,
-                })),
-                ({ value }: { value: string }) => value
-              ),
-              onFilter: (value: string, record: Lesson) => record?.pathway?.id === value,
-              sorter: (a: Lesson, b: Lesson) => a.name.localeCompare(b.name),
+              key: "pathways",
+              haveLabel: true,
+              render: (pathways: Pathway[]) =>
+                pathways?.map((pathway) => (
+                  <a href={pathway?.link} key={pathway?.id}>
+                    {pathway?.name}
+                  </a>
+                )),
             },
             {
               key: "actions",
+              haveLabel: true,
+              width: "10em",
               render: (actions: ActionsType, record: Lesson) => (
                 <Actions
                   to={`/lessons/${record.id}`}
                   downloadTitle={actions.downloadTitle}
                   cloudTitle={actions.cloudTitle}
                   deleteTitle={actions.deleteTitle}
+                  deleteOnClick={() => archivedOneLesson(record.id)}
                 />
               ),
             },
