@@ -1,0 +1,10 @@
+table:
+  name: pathway_calendar
+  schema: public
+object_relationships:
+  - name: calendar
+    using:
+      foreign_key_constraint_on: calendar_id
+  - name: pathway
+    using:
+      foreign_key_constraint_on: pathway_id

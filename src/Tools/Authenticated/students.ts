@@ -1,13 +1,13 @@
 import { gql, useMutation, useQuery } from "@apollo/client"
 import { useState } from "react"
 import { useDebouncedCallback } from "use-debounce"
-import { generateColor } from "../../../helper/generate_colors.js"
 import { Lesson as HasuraLesson } from "../../Types/Hasura/lesson.js"
 import { Module as HasuraModule } from "../../Types/Hasura/module.js"
 import { Student as HasuraStudent } from "../../Types/Hasura/student.js"
 import { Student } from "../../Types/student.js"
 import { toCalendars } from "./calendars.js"
 import { toCompany } from "./companies.js"
+import { toEvent } from "./event.js"
 import { toPathways } from "./pathways.js"
 
 const calendarFragment = gql`
@@ -139,13 +139,7 @@ const toStudent = (student: HasuraStudent): Student => {
     archived: student?.archived,
     events: student?.student_calendars[0]?.calendar?.module_calendars.flatMap(
       ({ module }: { module: HasuraModule }) =>
-        module.module_lessons.map(({ lesson }: { lesson: HasuraLesson }) => ({
-          title: lesson.name,
-          start: lesson.start_date,
-          end: lesson.end_date,
-          backgroundColor: generateColor(module.name),
-          borderColor: generateColor(module.name),
-        }))
+        module.module_lessons.map(({ lesson }: { lesson: HasuraLesson }) => toEvent(lesson, module))
     ),
     companies: student?.student_companies?.map((student_company) =>
       toCompany(student_company.company)

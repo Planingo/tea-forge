@@ -16,6 +16,13 @@ array_relationships:
         table:
           name: module_calendar
           schema: public
+  - name: pathway_calendars
+    using:
+      foreign_key_constraint_on:
+        column: calendar_id
+        table:
+          name: pathway_calendar
+          schema: public
   - name: student_calendars
     using:
       foreign_key_constraint_on:

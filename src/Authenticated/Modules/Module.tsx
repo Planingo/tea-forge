@@ -1,8 +1,6 @@
 import { Header, ModuleForm, UserOutlined } from "@pixel-brew/bubble-craft"
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { useSearchCalendars } from "../../Tools/Authenticated/calendars.js"
-import { useCompanies } from "../../Tools/Authenticated/companies.js"
 import { useAddOneModule, useGetModuleById } from "../../Tools/Authenticated/modules.js"
 import { useSearchPathways } from "../../Tools/Authenticated/pathways.js"
 import { Details } from "../Layout/Details.js"
@@ -14,8 +12,6 @@ export const Module = () => {
   const navigate = useNavigate()
   const [addOneModule, loading] = useAddOneModule()
   const [isGrid, setIsGrid] = useState(false)
-  const { companies } = useCompanies()
-  const { calendars } = useSearchCalendars()
   const { pathways } = useSearchPathways()
 
   if (loadingModule) return

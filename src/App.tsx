@@ -20,6 +20,7 @@ import { Lesson } from "./Authenticated/Lessons/Lesson.js"
 import { Lessons } from "./Authenticated/Lessons/Lessons.js"
 import { Module } from "./Authenticated/Modules/Module.js"
 import { Modules } from "./Authenticated/Modules/Modules.js"
+import { Pathway } from "./Authenticated/Pathways/Pathway.js"
 import { Pathways } from "./Authenticated/Pathways/Pathways.js"
 import { Professor } from "./Authenticated/Professors/Professor.js"
 import { Professors } from "./Authenticated/Professors/Professors.js"
@@ -82,7 +83,8 @@ function Routes() {
           <ReactRoute path="/lessons/" element={<Lessons />} />
           <ReactRoute path="/modules/:id" element={<Module />} />
           <ReactRoute path="/modules/" element={<Modules />} />
-          <ReactRoute path="/pathways/:id?" element={<Pathways />} />
+          <ReactRoute path="/pathways/:id" element={<Pathway />} />
+          <ReactRoute path="/pathways/" element={<Pathways />} />
           <ReactRoute path="/rooms/:id?" element={<Rooms />} />
           <ReactRoute path="/companies/:id?" element={<Companies />} />
           <ReactRoute path="/settings" element={<Settings />} />
