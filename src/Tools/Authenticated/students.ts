@@ -362,11 +362,7 @@ export const useArchivedById = () => {
       }
     `,
     {
-      refetchQueries: [
-        {
-          query: SEARCH_STUDENTS,
-        },
-      ],
+      refetchQueries: ["getAllStudents"],
     }
   )
 

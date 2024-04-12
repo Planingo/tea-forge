@@ -4,26 +4,6 @@ import { useDebouncedCallback } from "use-debounce"
 import { Professor as HasuraProfessor } from "../../Types/Hasura/professor.js"
 import { Professor } from "../../Types/professor.js"
 
-const getProfessorsQuerie = gql`
-  query professors {
-    professor(
-      order_by: { user: { lastname: asc } }
-      where: { archived: { _eq: false }, user: { archived: { _eq: false } } }
-    ) {
-      id
-      user {
-        lastname
-        firstname
-        id
-        account {
-          id
-          email
-        }
-      }
-    }
-  }
-`
-
 const getProfessorById = gql`
   query professor_by_pk($id: uuid!) {
     professor_by_pk(id: $id) {
@@ -80,9 +60,7 @@ const SEARCH_PROFESSORS = gql`
   }
 `
 
-const toProfessor = (professor: HasuraProfessor | undefined | null): Professor | null => {
-  if (!professor) return null
-
+const toProfessor = (professor: HasuraProfessor): Professor => {
   return {
     id: professor.id,
     name: `${professor.user.lastname?.toUpperCase()} ${professor.user.firstname}`,
@@ -111,9 +89,10 @@ const toProfessor = (professor: HasuraProfessor | undefined | null): Professor |
   }
 }
 
-const toProfessors = (professors: HasuraProfessor[]) => {
+export const toProfessors = (professors: HasuraProfessor[]) => {
   return professors?.map((professor: HasuraProfessor) => toProfessor(professor))
 }
+
 export const useSearchProfessors = () => {
   const [searchQuery, setSearchQuery] = useState<any>({
     variables: {
@@ -172,13 +151,6 @@ export const useSearchProfessors = () => {
   }
 }
 
-export const useProfessors = () => {
-  const { data, ...result } = useQuery(getProfessorsQuerie)
-
-  const professors = toProfessors(data?.professor)
-  return { professors, ...result }
-}
-
 export const useGetProfessorById = (id: string) => {
   const { data, ...result } = useQuery(getProfessorById, {
     variables: { id: id },
@@ -209,7 +181,6 @@ export const useAddOneProfessor = () => {
 
   return [
     (professor: any) => {
-      console.log(professor)
       return addOneProfessor({
         variables: {
           condition: {
@@ -241,11 +212,7 @@ export const useArchivedById = () => {
       }
     `,
     {
-      refetchQueries: [
-        {
-          query: SEARCH_PROFESSORS,
-        },
-      ],
+      refetchQueries: ["getAllProfessors"],
     }
   )
 

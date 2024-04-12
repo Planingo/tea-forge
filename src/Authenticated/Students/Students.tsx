@@ -11,9 +11,9 @@ import {
 } from "@pixel-brew/bubble-craft"
 import { useState } from "react"
 import { uniqBy } from "../../../helper/uniq.js"
-import { useCalendars } from "../../Tools/Authenticated/calendars.js"
+import { useSearchCalendars } from "../../Tools/Authenticated/calendars.js"
 import { useCompanies } from "../../Tools/Authenticated/companies.js"
-import { usePathways_tea } from "../../Tools/Authenticated/pathways.js"
+import { useSearchPathways } from "../../Tools/Authenticated/pathways.js"
 import {
   useAddOneStudent,
   useArchivedById,
@@ -39,8 +39,8 @@ export const Students = () => {
     loading: loadingStudents,
   } = useSearchStudents()
   const { companies } = useCompanies()
-  const { calendars } = useCalendars()
-  const { pathways } = usePathways_tea()
+  const { calendars } = useSearchCalendars()
+  const { pathways } = useSearchPathways()
   const [addOneStudent, loading] = useAddOneStudent()
   const [archivedOneStudent] = useArchivedById()
   const [isGrid, setIsGrid] = useState(false)
