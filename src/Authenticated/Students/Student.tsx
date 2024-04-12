@@ -2,7 +2,7 @@ import { Header, StudentEditForm, StudentForm, UserOutlined } from "@pixel-brew/
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useSearchCalendars } from "../../Tools/Authenticated/calendars.js"
-import { useCompanies } from "../../Tools/Authenticated/companies.js"
+import { useSearchCompanies } from "../../Tools/Authenticated/companies.js"
 import { useSearchPathways } from "../../Tools/Authenticated/pathways.js"
 import { useAddOneStudent, useGetStudentById } from "../../Tools/Authenticated/students.js"
 import { Details } from "../Layout/Details.js"
@@ -14,7 +14,7 @@ export const Student = () => {
   const navigate = useNavigate()
   const [addOneStudent, loading] = useAddOneStudent()
   const [isGrid, setIsGrid] = useState(false)
-  const { companies } = useCompanies()
+  const { companies } = useSearchCompanies()
   const { calendars } = useSearchCalendars()
   const { pathways } = useSearchPathways()
 

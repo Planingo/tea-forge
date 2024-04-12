@@ -1,29 +1,33 @@
 import {
   Actions,
+  ArchivedOutlined,
   CompanyForm,
   CompanyOutlined,
+  Filters,
   Gallery,
   GalleryList,
   Header,
-  Spin,
+  Tooltip,
 } from "@pixel-brew/bubble-craft"
 import { useState } from "react"
-import { useAddOneCompany, useCompanies } from "../../Tools/Authenticated/companies.js"
+import {
+  useAddOneCompany,
+  useArchivedById,
+  useSearchCompanies,
+} from "../../Tools/Authenticated/companies.js"
 import { Actions as ActionsType } from "../../Types/actions.js"
 import { Company } from "../../Types/company.js"
 import { Layout } from "../Layout/Layout.js"
 
 export const Companies = () => {
-  const onSearch = (e: string) => {
-    console.log
-  }
-  const { companies, loading: loadingCompanies } = useCompanies()
+  const { companies, loading: loadingCompanies, onSearch, filterByArchived } = useSearchCompanies()
   const [addOneCompany, loading] = useAddOneCompany()
   const [isGrid, setIsGrid] = useState(false)
+  const [archivedOneCompany] = useArchivedById()
   return (
     <Layout>
       <Header
-        placeholder="Rechercher"
+        placeholder="search"
         onSearch={onSearch}
         isRefinementList={true}
         refinementList={{
@@ -36,43 +40,63 @@ export const Companies = () => {
           setIsGrid: () => setIsGrid(!isGrid),
           formId: "company-form",
         }}
-        refinementDetails={{
-          FirstActionIcon: CompanyOutlined,
-          firstActionText: "app.add.company",
-          FirstForm: <CompanyForm onSubmit={addOneCompany} />,
-          firstActioning: loading,
-          onFirstAction: addOneCompany,
-          isGrid: isGrid,
-          setIsGrid: () => setIsGrid(isGrid),
-          formId: "company-form",
-          SecondActionIcon: console.log,
-          SecondForm: <></>,
-          onSecondAction: console.log,
-          secondActionText: "app.edit.company",
-          secondActioning: console.log,
-        }}
       />
-      {loadingCompanies ? (
-        <Spin />
-      ) : isGrid ? (
-        <Gallery datas={companies} name="companies" />
+      <Filters
+        selects={[
+          {
+            placeholder: "archived",
+            defaultValue: "non archivé",
+            options: [
+              { value: "all", label: "tous" },
+              { value: true, label: "archivé" },
+              { value: false, label: "non archivé" },
+            ],
+            allowClear: false,
+            onChange: (isArchived: string | boolean) => filterByArchived(isArchived),
+          },
+        ]}
+        count={{ id: "company", count: companies?.length }}
+      />
+      {isGrid ? (
+        <Gallery datas={companies} loading={loadingCompanies} name="companies" />
       ) : (
         <GalleryList
           columns={[
             {
+              key: "archived",
+              width: "2em",
+              render: (archived: boolean) => (
+                <>
+                  {archived ? (
+                    <Tooltip title="archived" placement="bottom">
+                      <ArchivedOutlined className="cloud" />
+                    </Tooltip>
+                  ) : (
+                    <></>
+                  )}
+                </>
+              ),
+            },
+            {
               key: "photo",
+              width: "5em",
+              haveLabel: true,
               render: (photo: string) => <img src={photo} alt="placeholder" />,
             },
-            { key: "name" },
+            { key: "name", haveLabel: true },
+            { key: "student_number", haveLabel: true },
             {
               key: "actions",
               title: "actions",
+              width: "10em",
+              haveLabel: true,
               render: (actions: ActionsType, record: Company) => (
                 <Actions
                   to={`/companies/${record.id}`}
                   downloadTitle={actions.downloadTitle}
                   cloudTitle={actions.cloudTitle}
                   deleteTitle={actions.deleteTitle}
+                  deleteOnClick={() => archivedOneCompany(record.id)}
                 />
               ),
             },
