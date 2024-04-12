@@ -1,43 +1,106 @@
 import { gql, useMutation, useQuery } from "@apollo/client"
+import { useState } from "react"
+import { useDebouncedCallback } from "use-debounce"
 import { Room as HasuraRoom } from "../../Types/Hasura/room.js"
 import { Room } from "../../Types/room.js"
 
-const getRoomsQuerie = gql`
-  query rooms {
-    room(order_by: { name: asc }, where: { archived: { _eq: false } }) {
+const SEARCH_ROOMS = gql`
+  query getAllRooms($condition: room_bool_exp!) {
+    room(where: { _and: [$condition] }, order_by: { name: asc }) {
       id
+      archived
       max_seats
       name
     }
   }
 `
 
-export const useRooms = () => {
-  const { data, ...result } = useQuery(getRoomsQuerie)
-  const rooms: Room = data?.room.map((room: HasuraRoom) => ({
-    id: room.id,
-    name: `${room.name.toUpperCase()}`,
-    max_seats: room.max_seats,
+const getRoomById = gql`
+  query room_by_pk($id: uuid!) {
+    room_by_pk(id: $id) {
+      id
+      archived
+      max_seats
+      name
+    }
+  }
+`
+
+export const toRoom = (room: HasuraRoom): Room => {
+  return {
+    id: room?.id,
+    name: `${room?.name?.toUpperCase()}`,
+    max_seats: room?.max_seats,
+    archived: room?.archived,
     tags: [],
+    events: [],
     actions: {
       downloadTitle: {
-        id: "Télécharger le calendrier pour",
-        values: `${room.name.toUpperCase()}`,
+        id: "download.calendar.room",
+        values: `${room?.name.toUpperCase()}`,
       },
       cloudTitle: {
-        id: "Envoyer le calendrier",
-        values: `${room.name.toUpperCase()}`,
+        id: "send.calendar.room",
+        values: `${room?.name.toUpperCase()}`,
       },
       deleteTitle: {
-        id: "Archiver la salle",
-        values: `${room.name.toUpperCase()}`,
+        id: "archived.room",
+        values: `${room?.name.toUpperCase()}`,
       },
     },
-    link: `/rooms/${room.id}`,
-    alt: `${room.name.toUpperCase()}`,
-    photo: `https://avatars.bugsyaya.dev/150/${room.id}`,
-  }))
-  return { rooms, ...result }
+    link: `/rooms/${room?.id}`,
+    alt: `${room?.name?.toUpperCase()}`,
+    photo: `https://avatars.bugsyaya.dev/150/${room?.id}`,
+  }
+}
+
+export const toRooms = (rooms: HasuraRoom[]): Room[] => {
+  return rooms?.map((room) => toRoom(room))
+}
+
+export const useSearchRooms = () => {
+  const [searchQuery, setSearchQuery] = useState<any>({
+    variables: {
+      condition: { archived: { _eq: false } },
+    },
+  })
+
+  const { data, ...result } = useQuery(SEARCH_ROOMS, searchQuery)
+
+  const onSearch = useDebouncedCallback((searchText?: string) => {
+    setSearchQuery({
+      variables: {
+        condition: {
+          ...searchQuery.variables.condition,
+          name: searchText ? { _ilike: `%${searchText}%` } : undefined,
+        },
+      },
+    })
+  }, 500)
+
+  const filterByArchived = (archived: string | boolean) => {
+    setSearchQuery({
+      variables: {
+        condition: {
+          ...searchQuery.variables.condition,
+          archived: { _eq: archived === "all" ? undefined : archived },
+        },
+      },
+    })
+  }
+
+  const rooms = toRooms(data?.room)?.filter((room) =>
+    searchQuery?.variables?.condition?.archived?._eq !== undefined
+      ? room?.archived === searchQuery?.variables?.condition?.archived?._eq
+      : room
+  )
+
+  return {
+    onSearch,
+    rooms,
+    filterByArchived,
+    ...result,
+  }
 }
 
 export const useAddOneRoom = () => {
@@ -50,11 +113,7 @@ export const useAddOneRoom = () => {
       }
     `,
     {
-      refetchQueries: [
-        {
-          query: getRoomsQuerie,
-        },
-      ],
+      refetchQueries: ["getAllRooms"],
     }
   )
 
@@ -64,4 +123,38 @@ export const useAddOneRoom = () => {
     },
     result,
   ]
+}
+
+export const useArchivedById = () => {
+  const [archivedOneRoom, result] = useMutation(
+    gql`
+      mutation archivedOneRoom($id: uuid!) {
+        update_room_by_pk(pk_columns: { id: $id }, _set: { archived: true }) {
+          id
+          archived
+          updated_at
+          created_at
+        }
+      }
+    `,
+    {
+      refetchQueries: ["getAllRooms"],
+    }
+  )
+
+  return [
+    (id: string) => {
+      return archivedOneRoom({ variables: { id: id } })
+    },
+    result,
+  ] as const
+}
+
+export const useGetRoomById = (id: string) => {
+  const { data, ...result } = useQuery(getRoomById, {
+    variables: { id: id },
+  })
+
+  const r = toRoom(data?.room_by_pk)
+  return { room: r, ...result }
 }
