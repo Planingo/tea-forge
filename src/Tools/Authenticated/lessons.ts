@@ -48,33 +48,6 @@ const SEARCH_LESSONS = gql`
   ${calendarFragment}
 `
 
-const getLessonsQuerie = gql`
-  query lessons {
-    lesson(order_by: { name: asc }, where: { archived: { _eq: false } }) {
-      end_date
-      start_date
-      id
-      name
-      module_lessons {
-        id
-        module {
-          id
-          name
-          pathway_modules {
-            id
-            pathway {
-              id
-              name
-            }
-          }
-        }
-      }
-      ...calendarFragment
-    }
-  }
-  ${calendarFragment}
-`
-
 const getLessonById = gql`
   query lesson_by_pk($id: uuid!) {
     lesson_by_pk(id: $id) {
@@ -147,7 +120,7 @@ const toLesson = (lesson: HasuraLesson): Lesson => {
   }
 }
 
-const toLessons = (lessons: HasuraLesson[]): Lesson[] => {
+export const toLessons = (lessons: HasuraLesson[]): Lesson[] => {
   return lessons?.map((lesson: HasuraLesson) => toLesson(lesson))
 }
 
@@ -214,8 +187,6 @@ export const useSearchLessons = () => {
       : lesson
   )
 
-  console.log(lessons)
-
   return {
     onSearch,
     lessons,
@@ -233,12 +204,6 @@ export const useGetLessonById = (id: string) => {
 
   const l = toLesson(data?.lesson_by_pk)
   return { lesson: l, ...result }
-}
-
-export const useLessons = () => {
-  const { data, ...result } = useQuery(getLessonsQuerie)
-  const lessons = toLessons(data?.lesson)
-  return { lessons, ...result }
 }
 
 export const useAddOneLesson = () => {

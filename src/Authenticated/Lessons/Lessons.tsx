@@ -16,7 +16,7 @@ import {
   useArchivedById,
   useSearchLessons,
 } from "../../Tools/Authenticated/lessons.js"
-import { useModules_tea } from "../../Tools/Authenticated/modules.js"
+import { useSearchModules } from "../../Tools/Authenticated/modules.js"
 import { Actions as ActionsType } from "../../Types/actions.js"
 import { Lesson } from "../../Types/lesson.js"
 import { Module } from "../../Types/module.js"
@@ -33,7 +33,7 @@ export const Lessons = () => {
     filterByModule,
   } = useSearchLessons()
   const [archivedOneLesson] = useArchivedById()
-  const { modules, loading: loadingModules } = useModules_tea()
+  const { modules } = useSearchModules()
   const [addOneLesson, loading] = useAddOneLesson()
   const [isGrid, setIsGrid] = useState(false)
 

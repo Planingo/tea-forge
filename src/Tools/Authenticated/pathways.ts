@@ -1,12 +1,15 @@
 import { gql, useMutation, useQuery } from "@apollo/client"
+import { useState } from "react"
+import { useDebouncedCallback } from "use-debounce"
 import { Pathway as HasuraPathway } from "../../Types/Hasura/pathway.js"
 import { Pathway } from "../../Types/pathway.js"
 
-const getPathwaysQuerie = gql`
-  query pathways {
-    pathway(order_by: { name: asc }, where: { archived: { _eq: false } }) {
+const SEARCH_PATHWAYS = gql`
+  query getAllPathways($condition: pathway_bool_exp!) {
+    pathway(where: { _and: [$condition] }, order_by: { name: asc }) {
       id
       name
+      archived
     }
   }
 `
@@ -19,6 +22,7 @@ export const toPathway = (pathway: HasuraPathway): Pathway => {
   return {
     id: pathway?.id,
     name: pathway?.name,
+    archived: pathway?.archived,
     tags: [],
     actions: {
       downloadTitle: {
@@ -40,11 +44,62 @@ export const toPathway = (pathway: HasuraPathway): Pathway => {
   }
 }
 
-export const usePathways_tea = () => {
-  const { data, ...result } = useQuery(getPathwaysQuerie)
-  const pathways: Pathway[] = toPathways(data?.pathway)
+export const useSearchPathways = () => {
+  const [searchQuery, setSearchQuery] = useState<any>({
+    variables: {
+      searchText: "%%",
+      searchText2: "",
+      condition: { archived: { _eq: false } },
+    },
+  })
 
-  return { pathways, ...result }
+  const { data, ...result } = useQuery(SEARCH_PATHWAYS, searchQuery)
+
+  const filterByArchived = (archived?: boolean) => {
+    setSearchQuery({
+      variables: {
+        ...searchQuery.variables,
+        condition: {
+          ...searchQuery.variables.condition,
+          archived: { _eq: archived === null ? undefined : archived },
+        },
+      },
+    })
+  }
+
+  const onSearch = useDebouncedCallback((searchText: string) => {
+    const searchsTmp = searchText.split(" ").map((st: string) => `%${st}%`)
+
+    if (searchText)
+      setSearchQuery({
+        variables: {
+          ...searchQuery.variables,
+          searchText: searchsTmp[0],
+          searchText2: searchsTmp[1] || "",
+        },
+      })
+    else
+      setSearchQuery({
+        variables: {
+          ...searchQuery.variables,
+          searchText: "%%",
+          searchText2: "",
+        },
+      })
+  }, 500)
+
+  const pathways = toPathways(data?.pathway)?.filter(
+    (pathway) =>
+      pathway?.archived !== null ??
+      pathway?.archived === searchQuery?.variables?.condition?.archived?._eq
+  )
+
+  return {
+    onSearch,
+    pathways,
+    filterByArchived,
+    ...result,
+  }
 }
 
 export const useAddOnePathway = () => {
@@ -57,11 +112,7 @@ export const useAddOnePathway = () => {
       }
     `,
     {
-      refetchQueries: [
-        {
-          query: getPathwaysQuerie,
-        },
-      ],
+      refetchQueries: ["getAllPathways"],
     }
   )
 

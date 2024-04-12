@@ -8,7 +8,7 @@ import {
   Spin,
 } from "@pixel-brew/bubble-craft"
 import { useState } from "react"
-import { useAddOnePathway, usePathways_tea } from "../../Tools/Authenticated/pathways.js"
+import { useAddOnePathway, useSearchPathways } from "../../Tools/Authenticated/pathways.js"
 import { Actions as ActionsType } from "../../Types/actions.js"
 import { Pathway } from "../../Types/pathway.js"
 import { Layout } from "../Layout/Layout.js"
@@ -17,7 +17,7 @@ export const Pathways = () => {
   const onSearch = (e: string) => {
     console.log
   }
-  const { pathways, loading: loadingPathways } = usePathways_tea()
+  const { pathways, loading: loadingPathways } = useSearchPathways()
   const [addOnePathway, loading] = useAddOnePathway()
   const [isGrid, setIsGrid] = useState(false)
   return (

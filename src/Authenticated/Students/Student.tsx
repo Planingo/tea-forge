@@ -1,9 +1,9 @@
 import { Header, StudentEditForm, StudentForm, UserOutlined } from "@pixel-brew/bubble-craft"
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { useCalendars } from "../../Tools/Authenticated/calendars.js"
+import { useSearchCalendars } from "../../Tools/Authenticated/calendars.js"
 import { useCompanies } from "../../Tools/Authenticated/companies.js"
-import { usePathways_tea } from "../../Tools/Authenticated/pathways.js"
+import { useSearchPathways } from "../../Tools/Authenticated/pathways.js"
 import { useAddOneStudent, useGetStudentById } from "../../Tools/Authenticated/students.js"
 import { Details } from "../Layout/Details.js"
 import { Layout } from "../Layout/Layout.js"
@@ -15,8 +15,8 @@ export const Student = () => {
   const [addOneStudent, loading] = useAddOneStudent()
   const [isGrid, setIsGrid] = useState(false)
   const { companies } = useCompanies()
-  const { calendars } = useCalendars()
-  const { pathways } = usePathways_tea()
+  const { calendars } = useSearchCalendars()
+  const { pathways } = useSearchPathways()
 
   if (loadingStudent) return
 

@@ -32,31 +32,6 @@ const SEARCH_CALENDARS = gql`
   }
 `
 
-const getCalendarsQuerie = gql`
-  query calendars {
-    calendar(order_by: { name: asc }, where: { archived: { _eq: false } }) {
-      id
-      name
-      calendar_lessons {
-        id
-        lesson {
-          id
-          name
-          start_date
-          end_date
-          module_lessons {
-            id
-            module {
-              id
-              name
-            }
-          }
-        }
-      }
-    }
-  }
-`
-
 const getCalendarById = gql`
   query calendar_by_pk($id: uuid!) {
     calendar_by_pk(id: $id) {
@@ -111,13 +86,6 @@ export const toCalendars = (calendars: HasuraCalendar[]) => {
   return calendars?.map((calendar: HasuraCalendar) => toCalendar(calendar))
 }
 
-export const useCalendars = () => {
-  const { data, ...result } = useQuery(getCalendarsQuerie)
-
-  const calendars = toCalendars(data?.calendar)
-  return { calendars, ...result }
-}
-
 export const useAddOneCalendar = () => {
   const [addOneCalendar, result] = useMutation(
     gql`
@@ -144,11 +112,7 @@ export const useAddOneCalendar = () => {
       }
     `,
     {
-      refetchQueries: [
-        {
-          query: getCalendarsQuerie,
-        },
-      ],
+      refetchQueries: ["getAllCalendars"],
     }
   )
 
