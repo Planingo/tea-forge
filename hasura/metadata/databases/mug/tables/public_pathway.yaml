@@ -2,6 +2,13 @@ table:
   name: pathway
   schema: public
 array_relationships:
+  - name: pathway_calendars
+    using:
+      foreign_key_constraint_on:
+        column: pathway_id
+        table:
+          name: pathway_calendar
+          schema: public
   - name: pathway_modules
     using:
       foreign_key_constraint_on:

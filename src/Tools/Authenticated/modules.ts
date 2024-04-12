@@ -16,6 +16,7 @@ const getModuleById = gql`
     }
   }
 `
+
 const SEARCH_MODULES = gql`
   query getAllModules($condition: module_bool_exp!) {
     module(where: { _and: [$condition] }, order_by: { name: asc }) {

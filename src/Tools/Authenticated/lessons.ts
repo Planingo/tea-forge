@@ -1,9 +1,9 @@
 import { gql, useMutation, useQuery } from "@apollo/client"
 import { useState } from "react"
 import { useDebouncedCallback } from "use-debounce"
-import { generateColor } from "../../../helper/generate_colors.js"
 import { Lesson as HasuraLesson } from "../../Types/Hasura/lesson.js"
 import { Lesson } from "../../Types/lesson.js"
+import { toEvent } from "./event.js"
 import { toModules } from "./modules.js"
 import { toPathways } from "./pathways.js"
 
@@ -90,15 +90,7 @@ const toLesson = (lesson: HasuraLesson): Lesson => {
         module_lesson.module?.pathway_modules.map((pathway_modules) => pathway_modules.pathway)
       )
     ),
-    events: [
-      {
-        title: lesson?.name,
-        start: lesson?.start_date,
-        end: lesson?.start_date,
-        backgroundColor: generateColor(lesson?.module_lessons[0]?.module?.name || "null"),
-        borderColor: generateColor(lesson?.module_lessons[0]?.module?.name || "null"),
-      },
-    ],
+    events: [toEvent(lesson)],
     tags: [],
     actions: {
       downloadTitle: {
