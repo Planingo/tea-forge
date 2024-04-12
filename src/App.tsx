@@ -16,6 +16,7 @@ import { Authenticated } from "./Authenticated/Authenticated.js"
 import { Calendar } from "./Authenticated/Calendars/Calendar.js"
 import { Calendars } from "./Authenticated/Calendars/Calendars.js"
 import { Companies } from "./Authenticated/Companies/Companies.js"
+import { Company } from "./Authenticated/Companies/Company.js"
 import { Lesson } from "./Authenticated/Lessons/Lesson.js"
 import { Lessons } from "./Authenticated/Lessons/Lessons.js"
 import { Module } from "./Authenticated/Modules/Module.js"
@@ -88,7 +89,8 @@ function Routes() {
           <ReactRoute path="/pathways/" element={<Pathways />} />
           <ReactRoute path="/rooms/:id" element={<Room />} />
           <ReactRoute path="/rooms/" element={<Rooms />} />
-          <ReactRoute path="/companies/:id?" element={<Companies />} />
+          <ReactRoute path="/companies/:id" element={<Company />} />
+          <ReactRoute path="/companies/" element={<Companies />} />
           <ReactRoute path="/settings" element={<Settings />} />
         </ReactRoute>
       </ReactRoutes>

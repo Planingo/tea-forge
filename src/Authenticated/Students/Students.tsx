@@ -12,7 +12,7 @@ import {
 import { useState } from "react"
 import { uniqBy } from "../../../helper/uniq.js"
 import { useSearchCalendars } from "../../Tools/Authenticated/calendars.js"
-import { useCompanies } from "../../Tools/Authenticated/companies.js"
+import { useSearchCompanies } from "../../Tools/Authenticated/companies.js"
 import { useSearchPathways } from "../../Tools/Authenticated/pathways.js"
 import {
   useAddOneStudent,
@@ -38,7 +38,7 @@ export const Students = () => {
     filterByCompany,
     loading: loadingStudents,
   } = useSearchStudents()
-  const { companies } = useCompanies()
+  const { companies } = useSearchCompanies()
   const { calendars } = useSearchCalendars()
   const { pathways } = useSearchPathways()
   const [addOneStudent, loading] = useAddOneStudent()
