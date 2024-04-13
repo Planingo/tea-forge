@@ -14,8 +14,6 @@ export const Authenticated = () => {
 
   const { account } = useGetAccountById(accountId!)
 
-  console.log(account)
-
   if (token && location.pathname === "/")
     return (
       <Navigation roles={[Roles.SUPER_ADMIN, Roles.PLANING_KEEPER]} email={account?.email}>
@@ -31,6 +29,7 @@ export const Authenticated = () => {
           roles={[Roles.SUPER_ADMIN, Roles.PLANING_KEEPER]}
           logout={() => {
             localStorage.removeItem("token")
+            localStorage.removeItem("account")
             navigate("/login")
           }}
         />

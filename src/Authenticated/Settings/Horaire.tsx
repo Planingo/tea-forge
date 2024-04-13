@@ -2,7 +2,6 @@ import { Week } from "../../Types/week.js"
 import "./horaire.css"
 
 export const Horaire = ({ week }: { week: Week }) => {
-  console.log("week : ", week)
   return (
     <div className="hours">
       <div className="day">
