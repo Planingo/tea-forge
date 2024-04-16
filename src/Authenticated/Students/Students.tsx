@@ -213,6 +213,8 @@ export const Students = () => {
                   downloadTitle={actions.downloadTitle}
                   cloudTitle={actions.cloudTitle}
                   deleteTitle={actions.deleteTitle}
+                  disabledDownload={record.calendars.length < 1}
+                  disabledSend={!record.email || record.calendars.length < 1}
                   deleteOnClick={() => archivedOneStudent(record.id)}
                 />
               ),

@@ -1,4 +1,5 @@
 import { Actions } from "./actions.js"
+import { Event } from "./event.js"
 import { Module_Calendars } from "./Hasura/module_calendars.js"
 
 export type Calendar = {
@@ -7,6 +8,7 @@ export type Calendar = {
   name: string
   actions: Actions
   link: string
+  events: Event[]
   alt: string
   photo: string
 }

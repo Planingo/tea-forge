@@ -16,3 +16,10 @@ array_relationships:
         table:
           name: module_lesson
           schema: public
+  - name: pathway_lessons
+    using:
+      foreign_key_constraint_on:
+        column: lesson_id
+        table:
+          name: pathway_lesson
+          schema: public

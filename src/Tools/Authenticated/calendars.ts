@@ -3,6 +3,7 @@ import { useState } from "react"
 import { useDebouncedCallback } from "use-debounce"
 import { Calendar } from "../../Types/calendar.js"
 import { Calendar as HasuraCalendar } from "../../Types/Hasura/calendar.js"
+import { toEvent } from "./event.js"
 
 const SEARCH_CALENDARS = gql`
   query getAllCalendars($searchText: String) {
@@ -12,18 +13,109 @@ const SEARCH_CALENDARS = gql`
     ) {
       id
       name
-      calendar_lessons {
+      pathway_calendars {
         id
-        lesson {
+        pathway {
           id
           name
-          start_date
-          end_date
-          module_lessons {
-            id
-            module {
+          pathway_lessons {
+            lesson {
               id
               name
+              start_date
+              end_date
+            }
+          }
+          sub_pathways_parent {
+            id
+            pathway_children {
+              id
+              name
+              pathway_lessons {
+                id
+                lesson {
+                  id
+                  name
+                  start_date
+                  end_date
+                  module_lessons {
+                    id
+                    module {
+                      id
+                      name
+                    }
+                  }
+                }
+              }
+              sub_pathways_parent {
+                id
+                pathway_children {
+                  id
+                  name
+                  pathway_lessons {
+                    id
+                    lesson {
+                      id
+                      name
+                      start_date
+                      end_date
+                      module_lessons {
+                        id
+                        module {
+                          id
+                          name
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          sub_pathways_children {
+            id
+            pathway_parent {
+              id
+              name
+              pathway_lessons {
+                id
+                lesson {
+                  id
+                  name
+                  start_date
+                  end_date
+                  module_lessons {
+                    id
+                    module {
+                      id
+                      name
+                    }
+                  }
+                }
+              }
+              sub_pathways_children {
+                id
+                pathway_parent {
+                  id
+                  name
+                  pathway_lessons {
+                    id
+                    lesson {
+                      id
+                      name
+                      start_date
+                      end_date
+                      module_lessons {
+                        id
+                        module {
+                          id
+                          name
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -37,18 +129,116 @@ const getCalendarById = gql`
     calendar_by_pk(id: $id) {
       id
       name
-      calendar_lessons {
+      pathway_calendars {
         id
-        lesson {
+        pathway {
           id
           name
-          start_date
-          end_date
-          module_lessons {
-            id
-            module {
+          pathway_lessons {
+            lesson {
               id
               name
+              start_date
+              end_date
+              module_lessons {
+                id
+                module {
+                  id
+                  name
+                }
+              }
+            }
+          }
+          sub_pathways_parent {
+            id
+            pathway_children {
+              id
+              name
+              pathway_lessons {
+                id
+                lesson {
+                  id
+                  name
+                  start_date
+                  end_date
+                  module_lessons {
+                    id
+                    module {
+                      id
+                      name
+                    }
+                  }
+                }
+              }
+              sub_pathways_parent {
+                id
+                pathway_children {
+                  id
+                  name
+                  pathway_lessons {
+                    id
+                    lesson {
+                      id
+                      name
+                      start_date
+                      end_date
+                      module_lessons {
+                        id
+                        module {
+                          id
+                          name
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          sub_pathways_children {
+            id
+            pathway_parent {
+              id
+              name
+              pathway_lessons {
+                id
+                lesson {
+                  id
+                  name
+                  start_date
+                  end_date
+                  module_lessons {
+                    id
+                    module {
+                      id
+                      name
+                    }
+                  }
+                }
+              }
+              sub_pathways_children {
+                id
+                pathway_parent {
+                  id
+                  name
+                  pathway_lessons {
+                    id
+                    lesson {
+                      id
+                      name
+                      start_date
+                      end_date
+                      module_lessons {
+                        id
+                        module {
+                          id
+                          name
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -62,6 +252,85 @@ export const toCalendar = (calendar: HasuraCalendar): Calendar => {
     id: calendar?.id,
     lessons: calendar?.module_calendars,
     name: calendar?.name?.toUpperCase(),
+    events: calendar?.pathway_calendars
+      ?.flatMap((pathway_calendar) =>
+        pathway_calendar?.pathway?.pathway_lessons?.map((pathway_lesson) =>
+          toEvent(
+            {
+              ...pathway_lesson?.lesson,
+              name: `${pathway_calendar?.pathway?.name} - ${pathway_lesson?.lesson?.name}`,
+            },
+            pathway_lesson?.lesson?.module_lessons &&
+              pathway_lesson?.lesson?.module_lessons[0]?.module
+          )
+        )
+      )
+      .concat(
+        calendar?.pathway_calendars?.flatMap((pathway_calendar) =>
+          pathway_calendar?.pathway?.sub_pathways_children?.flatMap((sub_pathway_children) =>
+            sub_pathway_children?.pathway_parent?.pathway_lessons?.map((pathway_lesson) =>
+              toEvent(
+                {
+                  ...pathway_lesson?.lesson,
+                  name: `${sub_pathway_children?.pathway_parent?.name} - ${pathway_lesson?.lesson?.name}`,
+                },
+                pathway_lesson?.lesson?.module_lessons &&
+                  pathway_lesson?.lesson?.module_lessons[0]?.module
+              )
+            )
+          )
+        )
+      )
+      .concat(
+        calendar?.pathway_calendars?.flatMap((pathway_calendar) =>
+          pathway_calendar?.pathway?.sub_pathways_children?.flatMap((sub_pathway_children) =>
+            sub_pathway_children?.pathway_parent?.sub_pathways_children?.flatMap((sub_pathway_c) =>
+              sub_pathway_c?.pathway_parent?.pathway_lessons?.flatMap((p_l) =>
+                toEvent(
+                  {
+                    ...p_l?.lesson,
+                    name: `${sub_pathway_c?.pathway_parent?.name} - ${p_l?.lesson?.name}`,
+                  },
+                  p_l?.lesson?.module_lessons && p_l?.lesson?.module_lessons[0]?.module
+                )
+              )
+            )
+          )
+        )
+      )
+      .concat(
+        calendar?.pathway_calendars?.flatMap((pathway_calendar) =>
+          pathway_calendar?.pathway?.sub_pathways_parent?.flatMap((sub_pathway_parent) =>
+            sub_pathway_parent?.pathway_children?.pathway_lessons?.map((pathway_lesson) =>
+              toEvent(
+                {
+                  ...pathway_lesson?.lesson,
+                  name: `${sub_pathway_parent?.pathway_children?.name} - ${pathway_lesson?.lesson?.name}`,
+                },
+                pathway_lesson?.lesson?.module_lessons &&
+                  pathway_lesson?.lesson?.module_lessons[0]?.module
+              )
+            )
+          )
+        )
+      )
+      .concat(
+        calendar?.pathway_calendars?.flatMap((pathway_calendar) =>
+          pathway_calendar?.pathway?.sub_pathways_parent?.flatMap((sub_pathway_parent) =>
+            sub_pathway_parent?.pathway_children?.sub_pathways_parent?.flatMap((sub_pathway_p) =>
+              sub_pathway_p?.pathway_children?.pathway_lessons?.flatMap((p_l) =>
+                toEvent(
+                  {
+                    ...p_l?.lesson,
+                    name: `${sub_pathway_p?.pathway_children?.name} - ${p_l?.lesson?.name}`,
+                  },
+                  p_l?.lesson?.module_lessons && p_l?.lesson?.module_lessons[0]?.module
+                )
+              )
+            )
+          )
+        )
+      ),
     actions: {
       downloadTitle: {
         id: "Télécharger le calendrier pour",
@@ -147,6 +416,7 @@ export const useGetCalendarById = (id: string) => {
   })
 
   const s = toCalendar(data?.calendar_by_pk)
+  console.log(s)
   return { calendar: s, ...result }
 }
 
