@@ -1,0 +1,10 @@
+table:
+  name: sub_pathway
+  schema: public
+object_relationships:
+  - name: pathway_children
+    using:
+      foreign_key_constraint_on: children_pathway_id
+  - name: pathway_parent
+    using:
+      foreign_key_constraint_on: parent_pathway_id

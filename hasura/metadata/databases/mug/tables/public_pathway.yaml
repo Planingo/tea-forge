@@ -9,6 +9,13 @@ array_relationships:
         table:
           name: pathway_calendar
           schema: public
+  - name: pathway_lessons
+    using:
+      foreign_key_constraint_on:
+        column: pathway_id
+        table:
+          name: pathway_lesson
+          schema: public
   - name: pathway_modules
     using:
       foreign_key_constraint_on:
@@ -22,4 +29,18 @@ array_relationships:
         column: pathway_id
         table:
           name: student_pathway
+          schema: public
+  - name: sub_pathways_children
+    using:
+      foreign_key_constraint_on:
+        column: children_pathway_id
+        table:
+          name: sub_pathway
+          schema: public
+  - name: sub_pathways_parent
+    using:
+      foreign_key_constraint_on:
+        column: parent_pathway_id
+        table:
+          name: sub_pathway
           schema: public

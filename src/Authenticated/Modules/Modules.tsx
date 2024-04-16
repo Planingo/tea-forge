@@ -22,6 +22,7 @@ import { Calendar } from "../../Types/calendar.js"
 import { Module } from "../../Types/module.js"
 import { Pathway } from "../../Types/pathway.js"
 import { Layout } from "../Layout/Layout.js"
+import "./modules.css"
 
 export const Modules = () => {
   const {
@@ -133,12 +134,15 @@ export const Modules = () => {
             {
               key: "pathways",
               haveLabel: true,
-              render: (pathways: Pathway[]) =>
-                pathways?.map((pathway) => (
-                  <a href={pathway?.link} key={pathway?.id}>
-                    {pathway?.name}
-                  </a>
-                )),
+              render: (pathways: Pathway[]) => (
+                <div className="container-module">
+                  {pathways?.map((pathway) => (
+                    <a href={pathway?.link} key={pathway?.id}>
+                      {pathway?.name}
+                    </a>
+                  ))}
+                </div>
+              ),
             },
             {
               key: "calendars",

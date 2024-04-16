@@ -1,12 +1,8 @@
-import {
-  Calendar as CalendarBubbleCraft,
-  Header,
-  StudentForm,
-  UserOutlined,
-} from "@pixel-brew/bubble-craft"
+import { Header, StudentForm, UserOutlined } from "@pixel-brew/bubble-craft"
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useAddOneCalendar, useGetCalendarById } from "../../Tools/Authenticated/calendars.js"
+import { Details } from "../Layout/Details.js"
 import { Layout } from "../Layout/Layout.js"
 import "./calendar.css"
 
@@ -49,16 +45,8 @@ export const Calendar = () => {
           ),
         }}
       />
-      {
-        <div className="details">
-          <div>
-            <h1>Contraintes</h1>
-          </div>
-          <div>
-            <CalendarBubbleCraft events={[]} />
-          </div>
-        </div>
-      }
+
+      <Details entityName={calendar?.name} events={calendar?.events} />
     </Layout>
   )
 }

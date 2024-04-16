@@ -1,42 +1,12 @@
 import { gql, useMutation, useQuery } from "@apollo/client"
 import { useState } from "react"
 import { useDebouncedCallback } from "use-debounce"
-import { Lesson as HasuraLesson } from "../../Types/Hasura/lesson.js"
-import { Module as HasuraModule } from "../../Types/Hasura/module.js"
 import { Student as HasuraStudent } from "../../Types/Hasura/student.js"
 import { Student } from "../../Types/student.js"
 import { toCalendars } from "./calendars.js"
 import { toCompany } from "./companies.js"
 import { toEvent } from "./event.js"
 import { toPathways } from "./pathways.js"
-
-const calendarFragment = gql`
-  fragment calendarFragment on student {
-    student_calendars {
-      id
-      calendar {
-        id
-        name
-        module_calendars {
-          id
-          module {
-            id
-            name
-            module_lessons {
-              id
-              lesson {
-                id
-                name
-                end_date
-                start_date
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`
 
 const SEARCH_STUDENTS = gql`
   query getAllStudents($searchText: String, $searchText2: String, $condition: student_bool_exp!) {
@@ -74,6 +44,85 @@ const SEARCH_STUDENTS = gql`
         pathway {
           id
           name
+          pathway_lessons {
+            lesson {
+              id
+              name
+              start_date
+              end_date
+            }
+          }
+          sub_pathways_parent {
+            id
+            pathway_children {
+              id
+              name
+              pathway_lessons {
+                id
+                lesson {
+                  id
+                  name
+                  start_date
+                  end_date
+                }
+              }
+              sub_pathways_parent {
+                id
+                pathway_children {
+                  id
+                  name
+                  pathway_lessons {
+                    id
+                    lesson {
+                      id
+                      name
+                      start_date
+                      end_date
+                    }
+                  }
+                }
+              }
+            }
+          }
+          sub_pathways_children {
+            id
+            pathway_parent {
+              id
+              name
+              pathway_lessons {
+                id
+                lesson {
+                  id
+                  name
+                  start_date
+                  end_date
+                }
+              }
+              sub_pathways_children {
+                id
+                pathway_parent {
+                  id
+                  name
+                  pathway_lessons {
+                    id
+                    lesson {
+                      id
+                      name
+                      start_date
+                      end_date
+                    }
+                  }
+                }
+              }
+            }
+          }
+          pathway_calendars {
+            id
+            calendar {
+              id
+              name
+            }
+          }
         }
       }
       student_companies {
@@ -83,10 +132,8 @@ const SEARCH_STUDENTS = gql`
           name
         }
       }
-      ...calendarFragment
     }
   }
-  ${calendarFragment}
 `
 
 const getStudentById = gql`
@@ -108,6 +155,85 @@ const getStudentById = gql`
         pathway {
           id
           name
+          pathway_lessons {
+            lesson {
+              id
+              name
+              start_date
+              end_date
+            }
+          }
+          sub_pathways_parent {
+            id
+            pathway_children {
+              id
+              name
+              pathway_lessons {
+                id
+                lesson {
+                  id
+                  name
+                  start_date
+                  end_date
+                }
+              }
+              sub_pathways_parent {
+                id
+                pathway_children {
+                  id
+                  name
+                  pathway_lessons {
+                    id
+                    lesson {
+                      id
+                      name
+                      start_date
+                      end_date
+                    }
+                  }
+                }
+              }
+            }
+          }
+          sub_pathways_children {
+            id
+            pathway_parent {
+              id
+              name
+              pathway_lessons {
+                id
+                lesson {
+                  id
+                  name
+                  start_date
+                  end_date
+                }
+              }
+              sub_pathways_children {
+                id
+                pathway_parent {
+                  id
+                  name
+                  pathway_lessons {
+                    id
+                    lesson {
+                      id
+                      name
+                      start_date
+                      end_date
+                    }
+                  }
+                }
+              }
+            }
+          }
+          pathway_calendars {
+            id
+            calendar {
+              id
+              name
+            }
+          }
         }
       }
       student_companies {
@@ -117,10 +243,8 @@ const getStudentById = gql`
           name
         }
       }
-      ...calendarFragment
     }
   }
-  ${calendarFragment}
 `
 
 const toStudent = (student: HasuraStudent): Student => {
@@ -131,16 +255,58 @@ const toStudent = (student: HasuraStudent): Student => {
     lastname: student?.user.lastname?.toUpperCase(),
     email: student?.user.account?.email,
     pathways: toPathways(
-      student?.student_pathways.map((student_pathway) => student_pathway.pathway)
+      student?.student_pathways?.map((student_pathway) => student_pathway.pathway)
     ),
     calendars: toCalendars(
-      student?.student_calendars.map((student_calendar) => student_calendar.calendar)
+      student?.student_pathways.flatMap((student_pathway) =>
+        student_pathway.pathway.pathway_calendars.map(
+          (pathway_calendar) => pathway_calendar.calendar
+        )
+      )
     ),
     archived: student?.archived,
-    events: student?.student_calendars[0]?.calendar?.module_calendars.flatMap(
-      ({ module }: { module: HasuraModule }) =>
-        module.module_lessons.map(({ lesson }: { lesson: HasuraLesson }) => toEvent(lesson, module))
-    ),
+    events: student?.student_pathways
+      ?.flatMap((student_pathway) =>
+        student_pathway?.pathway?.pathway_lessons?.map((pathway_lesson) =>
+          toEvent(pathway_lesson?.lesson)
+        )
+      )
+      .concat(
+        student?.student_pathways?.flatMap((student_pathways) =>
+          student_pathways?.pathway?.sub_pathways_children?.flatMap((sub_pathway_children) =>
+            sub_pathway_children?.pathway_parent?.pathway_lessons?.map((pathway_lesson) =>
+              toEvent(pathway_lesson?.lesson)
+            )
+          )
+        )
+      )
+      .concat(
+        student?.student_pathways?.flatMap((student_pathways) =>
+          student_pathways?.pathway?.sub_pathways_children?.flatMap((sub_pathway_children) =>
+            sub_pathway_children?.pathway_parent?.sub_pathways_children?.flatMap((sub_pathway_c) =>
+              sub_pathway_c.pathway_parent.pathway_lessons.flatMap((p_l) => toEvent(p_l.lesson))
+            )
+          )
+        )
+      )
+      .concat(
+        student?.student_pathways?.flatMap((student_pathways) =>
+          student_pathways?.pathway?.sub_pathways_parent?.flatMap((sub_pathway_parent) =>
+            sub_pathway_parent?.pathway_children?.pathway_lessons?.map((pathway_lesson) =>
+              toEvent(pathway_lesson?.lesson)
+            )
+          )
+        )
+      )
+      .concat(
+        student?.student_pathways?.flatMap((student_pathways) =>
+          student_pathways?.pathway?.sub_pathways_parent?.flatMap((sub_pathway_parent) =>
+            sub_pathway_parent?.pathway_children?.sub_pathways_parent?.flatMap((sub_pathway_p) =>
+              sub_pathway_p.pathway_children.pathway_lessons.flatMap((p_l) => toEvent(p_l.lesson))
+            )
+          )
+        )
+      ),
     companies: student?.student_companies?.map((student_company) =>
       toCompany(student_company.company)
     ),

@@ -7,7 +7,7 @@ export const toEvent = (lesson: HasuraLesson, module?: HasuraModule): Event => {
   return {
     title: lesson?.name,
     start: lesson?.start_date,
-    end: lesson?.start_date,
+    end: lesson?.end_date,
     backgroundColor: generateColor(
       module?.name ||
         (lesson?.module_lessons?.length > 0 &&
