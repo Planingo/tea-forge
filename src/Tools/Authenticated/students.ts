@@ -2,129 +2,138 @@ import { gql, useMutation, useQuery } from "@apollo/client"
 import { useState } from "react"
 import { useDebouncedCallback } from "use-debounce"
 import { Student as HasuraStudent } from "../../Types/Hasura/student.js"
+import { Student_Pathways } from "../../Types/Hasura/student_pathways.js"
+import { Event } from "../../Types/event.js"
 import { Student } from "../../Types/student.js"
 import { toCalendars } from "./calendars.js"
 import { toCompany } from "./companies.js"
 import { toEvent } from "./event.js"
 import { toPathways } from "./pathways.js"
 
-const SEARCH_STUDENTS = gql`
-  query getAllStudents($searchText: String, $searchText2: String, $condition: student_bool_exp!) {
-    student(
-      where: {
-        _and: [
-          {
-            user: {
-              _or: [
-                { firstname: { _ilike: $searchText } }
-                { lastname: { _ilike: $searchText2 } }
-                { firstname: { _ilike: $searchText2 } }
-                { lastname: { _ilike: $searchText } }
-              ]
+const userFragment = gql`
+  fragment userFragment on student {
+    user {
+      lastname
+      firstname
+      id
+      account {
+        id
+        email
+      }
+    }
+  }
+`
+
+const pathwayFragment = gql`
+  fragment pathwayFragment on student {
+    student_pathways {
+      id
+      pathway {
+        id
+        name
+      }
+    }
+  }
+`
+
+const calendarFragment = gql`
+  fragment calendarFragment on student {
+    student_pathways {
+      id
+      pathway {
+        id
+        name
+        pathway_lessons {
+          lesson {
+            id
+            name
+            start_date
+            end_date
+          }
+        }
+        sub_pathways_parent {
+          id
+          pathway_children {
+            id
+            name
+            pathway_lessons {
+              id
+              lesson {
+                id
+                name
+                start_date
+                end_date
+              }
+            }
+            sub_pathways_parent {
+              id
+              pathway_children {
+                id
+                name
+                pathway_lessons {
+                  id
+                  lesson {
+                    id
+                    name
+                    start_date
+                    end_date
+                  }
+                }
+              }
             }
           }
-          $condition
-        ]
+        }
+        sub_pathways_children {
+          id
+          pathway_parent {
+            id
+            name
+            pathway_lessons {
+              id
+              lesson {
+                id
+                name
+                start_date
+                end_date
+              }
+            }
+            sub_pathways_children {
+              id
+              pathway_parent {
+                id
+                name
+                pathway_lessons {
+                  id
+                  lesson {
+                    id
+                    name
+                    start_date
+                    end_date
+                  }
+                }
+              }
+            }
+          }
+        }
+        pathway_calendars {
+          id
+          calendar {
+            id
+            name
+          }
+        }
       }
-      order_by: { user: { lastname: asc } }
-    ) {
+    }
+  }
+`
+
+const SEARCH_STUDENTS = gql`
+  query getAllStudents($condition: student_bool_exp!) {
+    student(where: { _and: [$condition] }, order_by: { user: { lastname: asc } }) {
       id
       archived
-      user {
-        lastname
-        firstname
-        id
-        account {
-          id
-          email
-        }
-      }
-      student_pathways {
-        id
-        pathway {
-          id
-          name
-          pathway_lessons {
-            lesson {
-              id
-              name
-              start_date
-              end_date
-            }
-          }
-          sub_pathways_parent {
-            id
-            pathway_children {
-              id
-              name
-              pathway_lessons {
-                id
-                lesson {
-                  id
-                  name
-                  start_date
-                  end_date
-                }
-              }
-              sub_pathways_parent {
-                id
-                pathway_children {
-                  id
-                  name
-                  pathway_lessons {
-                    id
-                    lesson {
-                      id
-                      name
-                      start_date
-                      end_date
-                    }
-                  }
-                }
-              }
-            }
-          }
-          sub_pathways_children {
-            id
-            pathway_parent {
-              id
-              name
-              pathway_lessons {
-                id
-                lesson {
-                  id
-                  name
-                  start_date
-                  end_date
-                }
-              }
-              sub_pathways_children {
-                id
-                pathway_parent {
-                  id
-                  name
-                  pathway_lessons {
-                    id
-                    lesson {
-                      id
-                      name
-                      start_date
-                      end_date
-                    }
-                  }
-                }
-              }
-            }
-          }
-          pathway_calendars {
-            id
-            calendar {
-              id
-              name
-            }
-          }
-        }
-      }
+      ...userFragment
+      ...pathwayFragment
       student_companies {
         id
         company {
@@ -134,6 +143,8 @@ const SEARCH_STUDENTS = gql`
       }
     }
   }
+  ${userFragment}
+  ${pathwayFragment}
 `
 
 const getStudentById = gql`
@@ -141,101 +152,6 @@ const getStudentById = gql`
     student_by_pk(id: $id) {
       id
       archived
-      user {
-        lastname
-        firstname
-        id
-        account {
-          id
-          email
-        }
-      }
-      student_pathways {
-        id
-        pathway {
-          id
-          name
-          pathway_lessons {
-            lesson {
-              id
-              name
-              start_date
-              end_date
-            }
-          }
-          sub_pathways_parent {
-            id
-            pathway_children {
-              id
-              name
-              pathway_lessons {
-                id
-                lesson {
-                  id
-                  name
-                  start_date
-                  end_date
-                }
-              }
-              sub_pathways_parent {
-                id
-                pathway_children {
-                  id
-                  name
-                  pathway_lessons {
-                    id
-                    lesson {
-                      id
-                      name
-                      start_date
-                      end_date
-                    }
-                  }
-                }
-              }
-            }
-          }
-          sub_pathways_children {
-            id
-            pathway_parent {
-              id
-              name
-              pathway_lessons {
-                id
-                lesson {
-                  id
-                  name
-                  start_date
-                  end_date
-                }
-              }
-              sub_pathways_children {
-                id
-                pathway_parent {
-                  id
-                  name
-                  pathway_lessons {
-                    id
-                    lesson {
-                      id
-                      name
-                      start_date
-                      end_date
-                    }
-                  }
-                }
-              }
-            }
-          }
-          pathway_calendars {
-            id
-            calendar {
-              id
-              name
-            }
-          }
-        }
-      }
       student_companies {
         id
         company {
@@ -243,9 +159,58 @@ const getStudentById = gql`
           name
         }
       }
+      ...userFragment
+      ...calendarFragment
     }
   }
+  ${calendarFragment}
+  ${userFragment}
 `
+
+const studentToEvents = (studentPathways: Student_Pathways[]): Event[] => {
+  return studentPathways
+    ?.flatMap((student_pathway) =>
+      student_pathway?.pathway?.pathway_lessons?.map((pathway_lesson) =>
+        toEvent(pathway_lesson?.lesson)
+      )
+    )
+    .concat(
+      studentPathways?.flatMap((student_pathway) =>
+        student_pathway?.pathway?.sub_pathways_children?.flatMap((sub_pathway_children) =>
+          sub_pathway_children?.pathway_parent?.pathway_lessons?.map((pathway_lesson) =>
+            toEvent(pathway_lesson?.lesson)
+          )
+        )
+      )
+    )
+    .concat(
+      studentPathways?.flatMap((student_pathway) =>
+        student_pathway?.pathway?.sub_pathways_parent?.flatMap((sub_pathway_parent) =>
+          sub_pathway_parent?.pathway_children?.pathway_lessons?.map((pathway_lesson) =>
+            toEvent(pathway_lesson?.lesson)
+          )
+        )
+      )
+    )
+    .concat(
+      studentPathways?.flatMap((student_pathway) =>
+        student_pathway?.pathway?.sub_pathways_children?.flatMap((sub_pathway_children) =>
+          sub_pathway_children?.pathway_parent?.sub_pathways_children?.flatMap((sub_pathway_c) =>
+            sub_pathway_c?.pathway_parent?.pathway_lessons?.flatMap((p_l) => toEvent(p_l?.lesson))
+          )
+        )
+      )
+    )
+    .concat(
+      studentPathways?.flatMap((student_pathways) =>
+        student_pathways?.pathway?.sub_pathways_parent?.flatMap((sub_pathway_parent) =>
+          sub_pathway_parent?.pathway_children?.sub_pathways_parent?.flatMap((sub_pathway_p) =>
+            sub_pathway_p?.pathway_children?.pathway_lessons?.flatMap((p_l) => toEvent(p_l?.lesson))
+          )
+        )
+      )
+    )
+}
 
 const toStudent = (student: HasuraStudent): Student => {
   return {
@@ -258,55 +223,14 @@ const toStudent = (student: HasuraStudent): Student => {
       student?.student_pathways?.map((student_pathway) => student_pathway.pathway)
     ),
     calendars: toCalendars(
-      student?.student_pathways.flatMap((student_pathway) =>
-        student_pathway.pathway.pathway_calendars.map(
-          (pathway_calendar) => pathway_calendar.calendar
+      student?.student_pathways?.flatMap((student_pathway) =>
+        student_pathway?.pathway?.pathway_calendars?.map(
+          (pathway_calendar) => pathway_calendar?.calendar
         )
       )
     ),
     archived: student?.archived,
-    events: student?.student_pathways
-      ?.flatMap((student_pathway) =>
-        student_pathway?.pathway?.pathway_lessons?.map((pathway_lesson) =>
-          toEvent(pathway_lesson?.lesson)
-        )
-      )
-      .concat(
-        student?.student_pathways?.flatMap((student_pathways) =>
-          student_pathways?.pathway?.sub_pathways_children?.flatMap((sub_pathway_children) =>
-            sub_pathway_children?.pathway_parent?.pathway_lessons?.map((pathway_lesson) =>
-              toEvent(pathway_lesson?.lesson)
-            )
-          )
-        )
-      )
-      .concat(
-        student?.student_pathways?.flatMap((student_pathways) =>
-          student_pathways?.pathway?.sub_pathways_children?.flatMap((sub_pathway_children) =>
-            sub_pathway_children?.pathway_parent?.sub_pathways_children?.flatMap((sub_pathway_c) =>
-              sub_pathway_c.pathway_parent.pathway_lessons.flatMap((p_l) => toEvent(p_l.lesson))
-            )
-          )
-        )
-      )
-      .concat(
-        student?.student_pathways?.flatMap((student_pathways) =>
-          student_pathways?.pathway?.sub_pathways_parent?.flatMap((sub_pathway_parent) =>
-            sub_pathway_parent?.pathway_children?.pathway_lessons?.map((pathway_lesson) =>
-              toEvent(pathway_lesson?.lesson)
-            )
-          )
-        )
-      )
-      .concat(
-        student?.student_pathways?.flatMap((student_pathways) =>
-          student_pathways?.pathway?.sub_pathways_parent?.flatMap((sub_pathway_parent) =>
-            sub_pathway_parent?.pathway_children?.sub_pathways_parent?.flatMap((sub_pathway_p) =>
-              sub_pathway_p.pathway_children.pathway_lessons.flatMap((p_l) => toEvent(p_l.lesson))
-            )
-          )
-        )
-      ),
+    events: studentToEvents(student?.student_pathways),
     companies: student?.student_companies?.map((student_company) =>
       toCompany(student_company.company)
     ),
@@ -392,21 +316,25 @@ export const useAddOneStudent = () => {
 export const useSearchStudents = () => {
   const [searchQuery, setSearchQuery] = useState<any>({
     variables: {
-      searchText: "%%",
-      searchText2: "",
       condition: { archived: { _eq: false } },
     },
   })
 
   const { data, ...result } = useQuery(SEARCH_STUDENTS, searchQuery)
 
-  const filterByPathway = (id?: string) => {
+  const filterByPathway = (id?: string[]) => {
     setSearchQuery({
       variables: {
-        ...searchQuery.variables,
         condition: {
           ...searchQuery.variables.condition,
-          student_pathways: id ? { pathway: { id: { _eq: id } } } : undefined,
+          student_pathways: id?.length
+            ? {
+                _and: {
+                  pathway: { archived: { _eq: false } },
+                  pathway_id: { _in: id },
+                },
+              }
+            : undefined,
         },
       },
     })
@@ -439,7 +367,6 @@ export const useSearchStudents = () => {
   const filterByArchived = (archived?: boolean) => {
     setSearchQuery({
       variables: {
-        ...searchQuery.variables,
         condition: {
           ...searchQuery.variables.condition,
           archived: { _eq: archived === null ? undefined : archived },
@@ -448,25 +375,29 @@ export const useSearchStudents = () => {
     })
   }
 
-  const search = useDebouncedCallback((searchText: string) => {
-    const searchsTmp = searchText.split(" ").map((st: string) => `%${st}%`)
-
-    if (searchText)
-      setSearchQuery({
-        variables: {
-          ...searchQuery.variables,
-          searchText: searchsTmp[0],
-          searchText2: searchsTmp[1] || "",
+  const search = useDebouncedCallback((searchText?: string) => {
+    setSearchQuery({
+      variables: {
+        condition: {
+          ...searchQuery.variables.condition,
+          user: searchText
+            ? {
+                _or: searchText
+                  .split(" ")
+                  .filter((st) => st !== "")
+                  .flatMap((st) => [
+                    {
+                      firstname: {
+                        _ilike: `%${st}%`,
+                      },
+                    },
+                    { lastname: { _ilike: `%${st}%` } },
+                  ]),
+              }
+            : undefined,
         },
-      })
-    else
-      setSearchQuery({
-        variables: {
-          ...searchQuery.variables,
-          searchText: "%%",
-          searchText2: "",
-        },
-      })
+      },
+    })
   }, 500)
 
   const students = toStudents(data?.student)?.filter(

@@ -61,7 +61,7 @@ export const Professors = () => {
             onChange: (isArchived: string | boolean) => filterByArchived(isArchived),
           },
         ]}
-        count={{ id: "professor", count: professors?.length }}
+        count={{ id: "professorCount", count: professors?.length }}
       />
       {isGrid ? (
         <Gallery datas={professors} loading={loadingProfessors} name="professors" />

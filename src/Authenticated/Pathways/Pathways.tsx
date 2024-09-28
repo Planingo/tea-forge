@@ -80,7 +80,7 @@ export const Pathways = () => {
             onChange: (isArchived: string | boolean) => filterByArchived(isArchived),
           },
         ]}
-        count={{ id: "pathway", count: pathways?.length }}
+        count={{ id: "pathwayCount", count: pathways?.length }}
       />
       {isGrid ? (
         <Gallery datas={pathways} loading={loadingPathways} name="pathways" />

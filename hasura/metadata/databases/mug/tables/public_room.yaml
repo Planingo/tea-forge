@@ -1,3 +1,13 @@
 table:
   name: room
   schema: public
+object_relationships:
+  - name: rom_lesson
+    using:
+      manual_configuration:
+        column_mapping:
+          id: room_id
+        insertion_order: null
+        remote_table:
+          name: rom_lesson
+          schema: public

@@ -40,7 +40,7 @@ export const Lessons = () => {
   return (
     <Layout>
       <Header
-        placeholder="send"
+        placeholder="search"
         onSearch={onSearch}
         isRefinementList={true}
         refinementList={{
@@ -106,7 +106,7 @@ export const Lessons = () => {
             onChange: (isArchived: string | boolean) => filterByArchived(isArchived),
           },
         ]}
-        count={{ id: "lesson", count: lessons?.length }}
+        count={{ id: "lessonCount", count: lessons?.length }}
       />
       {isGrid ? (
         <Gallery datas={lessons} loading={loadingLessons} name="lessons" />

@@ -8,6 +8,8 @@ export type Pathway = {
   archived?: boolean
   tags: string[]
   calendars: Calendar[]
+  parent_pathway: Pathway
+  children_pathway: Pathway[]
   actions: Actions
   link: string
   alt: string
