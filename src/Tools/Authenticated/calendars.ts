@@ -4,120 +4,19 @@ import { useDebouncedCallback } from "use-debounce"
 import { Calendar } from "../../Types/calendar.js"
 import { Calendar as HasuraCalendar } from "../../Types/Hasura/calendar.js"
 import { toEvent } from "./event.js"
+import { toPathway } from "./pathways.js"
 
 const SEARCH_CALENDARS = gql`
-  query getAllCalendars($searchText: String) {
-    calendar(
-      order_by: { name: asc }
-      where: { archived: { _eq: false }, _or: { name: { _ilike: $searchText } } }
-    ) {
+  query getAllCalendars($condition: calendar_bool_exp!) {
+    calendar(where: { _and: [$condition] }, order_by: { name: asc }) {
       id
       name
+      archived
       pathway_calendars {
         id
         pathway {
           id
           name
-          pathway_lessons {
-            lesson {
-              id
-              name
-              start_date
-              end_date
-            }
-          }
-          sub_pathways_parent {
-            id
-            pathway_children {
-              id
-              name
-              pathway_lessons {
-                id
-                lesson {
-                  id
-                  name
-                  start_date
-                  end_date
-                  module_lessons {
-                    id
-                    module {
-                      id
-                      name
-                    }
-                  }
-                }
-              }
-              sub_pathways_parent {
-                id
-                pathway_children {
-                  id
-                  name
-                  pathway_lessons {
-                    id
-                    lesson {
-                      id
-                      name
-                      start_date
-                      end_date
-                      module_lessons {
-                        id
-                        module {
-                          id
-                          name
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-          sub_pathways_children {
-            id
-            pathway_parent {
-              id
-              name
-              pathway_lessons {
-                id
-                lesson {
-                  id
-                  name
-                  start_date
-                  end_date
-                  module_lessons {
-                    id
-                    module {
-                      id
-                      name
-                    }
-                  }
-                }
-              }
-              sub_pathways_children {
-                id
-                pathway_parent {
-                  id
-                  name
-                  pathway_lessons {
-                    id
-                    lesson {
-                      id
-                      name
-                      start_date
-                      end_date
-                      module_lessons {
-                        id
-                        module {
-                          id
-                          name
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
         }
       }
     }
@@ -250,8 +149,9 @@ const getCalendarById = gql`
 export const toCalendar = (calendar: HasuraCalendar): Calendar => {
   return {
     id: calendar?.id,
-    lessons: calendar?.module_calendars,
     name: calendar?.name?.toUpperCase(),
+    archived: calendar?.archived,
+    pathway: calendar?.pathway_calendars && toPathway(calendar?.pathway_calendars[0]?.pathway),
     events: calendar?.pathway_calendars
       ?.flatMap((pathway_calendar) =>
         pathway_calendar?.pathway?.pathway_lessons?.map((pathway_lesson) =>
@@ -333,15 +233,15 @@ export const toCalendar = (calendar: HasuraCalendar): Calendar => {
       ),
     actions: {
       downloadTitle: {
-        id: "Télécharger le calendrier pour",
+        id: "download.calendar.calendar",
         values: `${calendar?.name.toUpperCase()}`,
       },
       cloudTitle: {
-        id: "Envoyer le calendrier",
+        id: "send.calendar.calendar",
         values: `${calendar?.name.toUpperCase()}`,
       },
       deleteTitle: {
-        id: "Archiver le calendrier",
+        id: "archived.calendar",
         values: `${calendar?.name.toUpperCase()}`,
       },
     },
@@ -394,20 +294,50 @@ export const useAddOneCalendar = () => {
 }
 
 export const useSearchCalendars = () => {
-  const [searchQuery, setSearchQuery] = useState({
-    variables: { searchText: "%%" },
+  const [searchQuery, setSearchQuery] = useState<any>({
+    variables: {
+      condition: { archived: { _eq: false } },
+    },
   })
 
   const { data, ...result } = useQuery(SEARCH_CALENDARS, searchQuery)
 
-  const search = useDebouncedCallback((searchText: string) => {
-    const searchsTmp = searchText.split(" ").map((st: string) => `%${st}%`)
-    if (searchText) setSearchQuery({ variables: { searchText: searchsTmp[0] } })
-    else setSearchQuery({ variables: { searchText: "%%" } })
+  const onSearch = useDebouncedCallback((searchText?: string) => {
+    setSearchQuery({
+      variables: {
+        condition: {
+          ...searchQuery.variables.condition,
+          name: searchText ? { _ilike: `%${searchText}%` } : undefined,
+        },
+      },
+    })
   }, 500)
 
+  const filterByArchived = (archived: string | boolean) => {
+    setSearchQuery({
+      variables: {
+        condition: {
+          ...searchQuery.variables.condition,
+          archived: { _eq: archived === "all" ? undefined : archived },
+        },
+      },
+    })
+  }
+
+  const filterByPathway = (id?: string) => {
+    setSearchQuery({
+      variables: {
+        ...searchQuery.variables,
+        condition: {
+          ...searchQuery.variables.condition,
+          pathway_calendars: id ? { pathway: { id: { _eq: id } } } : undefined,
+        },
+      },
+    })
+  }
+
   const calendars = toCalendars(data?.calendar)
-  return { search, calendars, ...result }
+  return { onSearch, filterByArchived, filterByPathway, calendars, ...result }
 }
 
 export const useGetCalendarById = (id: string) => {
@@ -415,9 +345,8 @@ export const useGetCalendarById = (id: string) => {
     variables: { id: id },
   })
 
-  const s = toCalendar(data?.calendar_by_pk)
-  console.log(s)
-  return { calendar: s, ...result }
+  const c = toCalendar(data?.calendar_by_pk)
+  return { calendar: c, ...result }
 }
 
 export const useCountCalendar = () => {

@@ -98,7 +98,7 @@ export const Modules = () => {
             onChange: (isArchived: string | boolean) => filterByArchived(isArchived),
           },
         ]}
-        count={{ id: "module", count: modules?.length }}
+        count={{ id: "moduleCount", count: modules?.length }}
       />
       {isGrid ? (
         <Gallery datas={modules} loading={loadingModules} name="modules" />

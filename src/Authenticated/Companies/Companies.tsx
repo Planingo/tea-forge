@@ -55,7 +55,7 @@ export const Companies = () => {
             onChange: (isArchived: string | boolean) => filterByArchived(isArchived),
           },
         ]}
-        count={{ id: "company", count: companies?.length }}
+        count={{ id: "companyCount", count: companies?.length }}
       />
       {isGrid ? (
         <Gallery datas={companies} loading={loadingCompanies} name="companies" />

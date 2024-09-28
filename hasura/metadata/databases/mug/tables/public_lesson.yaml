@@ -1,6 +1,16 @@
 table:
   name: lesson
   schema: public
+object_relationships:
+  - name: rom_lesson
+    using:
+      manual_configuration:
+        column_mapping:
+          id: lesson_id
+        insertion_order: null
+        remote_table:
+          name: rom_lesson
+          schema: public
 array_relationships:
   - name: calendar_lessons
     using:

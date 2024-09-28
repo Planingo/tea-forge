@@ -2,6 +2,8 @@ import { gql, useMutation, useQuery } from "@apollo/client"
 import { useState } from "react"
 import { useDebouncedCallback } from "use-debounce"
 import { Pathway as HasuraPathway } from "../../Types/Hasura/pathway.js"
+import { Pathway_Children } from "../../Types/Hasura/pathway_children.js"
+import { Pathway_Parent } from "../../Types/Hasura/pathway_parent.js"
 import { Pathway } from "../../Types/pathway.js"
 import { toCalendars } from "./calendars.js"
 import { toEvent } from "./event.js"
@@ -73,6 +75,37 @@ const SEARCH_PATHWAYS = gql`
       id
       name
       archived
+      sub_pathways_parent {
+        id
+        pathway_children {
+          id
+          name
+          archived
+          sub_pathways_parent {
+            id
+            pathway_children {
+              id
+              name
+            }
+          }
+        }
+      }
+      sub_pathways_children {
+        id
+        pathway_parent {
+          id
+          name
+          archived
+          sub_pathways_children {
+            id
+            pathway_parent {
+              id
+              name
+              archived
+            }
+          }
+        }
+      }
       pathway_calendars {
         id
         calendar {
@@ -132,11 +165,17 @@ export const toPathways = (pathways: HasuraPathway[]): Pathway[] => {
   return pathways?.map((pathway: HasuraPathway) => toPathway(pathway))
 }
 
-export const toPathway = (pathway: HasuraPathway): Pathway => {
+export const toPathway = (pathway: HasuraPathway | Pathway_Parent | Pathway_Children): Pathway => {
   return {
     id: pathway?.id,
     name: pathway?.name,
     archived: pathway?.archived,
+    parent_pathway: pathway?.sub_pathways_children?.map((sub_pathway_children) =>
+      toPathway(sub_pathway_children?.pathway_parent)
+    )[0],
+    children_pathway: pathway?.sub_pathways_parent?.map((sub_pathway_parent) =>
+      toPathway(sub_pathway_parent?.pathway_children)
+    ),
     tags: [],
     events: pathway?.pathway_calendars?.flatMap((pathway_calendar) =>
       pathway_calendar?.calendar?.module_calendars?.flatMap((module_calendar) =>

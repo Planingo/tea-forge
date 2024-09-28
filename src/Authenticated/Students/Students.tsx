@@ -58,7 +58,7 @@ export const Students = () => {
             <StudentForm
               onSubmit={addOneStudent}
               companies={companies}
-              pathways={pathways}
+              pathways={pathways?.filter((pathway) => pathway.children_pathway.length === 0)}
               calendars={calendars}
             />
           ),
@@ -73,18 +73,17 @@ export const Students = () => {
         selects={[
           {
             placeholder: "pathways",
+            mode: "multiple",
             options:
-              students?.map((student) => student?.pathways) &&
-              uniqBy(
-                students
-                  ?.map((student) => student?.pathways)
-                  .flatMap((pathways) =>
-                    pathways.map((pathway) => ({ value: pathway?.id, label: pathway?.name }))
-                  ),
-                ({ value }) => value
-              ),
+              pathways &&
+              pathways
+                .filter((pathway) => pathway.children_pathway.length === 0)
+                .map((pathway) => ({
+                  value: pathway?.id,
+                  label: pathway?.name,
+                })),
             allowClear: true,
-            onChange: (id?: string) => filterByPathway(id),
+            onChange: (id?: string[]) => filterByPathway(id),
           },
           {
             placeholder: "calendars",
@@ -93,8 +92,8 @@ export const Students = () => {
               uniqBy(
                 students
                   ?.map((student) => student?.calendars)
-                  .flatMap((calendars) =>
-                    calendars.map((calendar) => ({ value: calendar?.id, label: calendar?.name }))
+                  ?.flatMap((calendars) =>
+                    calendars?.map((calendar) => ({ value: calendar?.id, label: calendar?.name }))
                   ),
                 ({ value }) => value
               ),
@@ -130,7 +129,7 @@ export const Students = () => {
             onChange: (isArchived?: boolean) => filterByArchived(isArchived),
           },
         ]}
-        count={{ id: "student", count: students?.length }}
+        count={{ id: "studentCount", count: students?.length }}
       />
       {isGrid ? (
         <Gallery datas={students} name="students" loading={loadingStudents} count={count} />

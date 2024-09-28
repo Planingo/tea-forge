@@ -15,6 +15,7 @@
 - "!include public_pathway_module.yaml"
 - "!include public_professor.yaml"
 - "!include public_role.yaml"
+- "!include public_rom_lesson.yaml"
 - "!include public_room.yaml"
 - "!include public_setting.yaml"
 - "!include public_setting_navigation.yaml"
